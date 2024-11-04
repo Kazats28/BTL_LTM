@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 public class DatabaseConnection {
 	
     private String jdbcURL = "jdbc:mysql://localhost:3306/CSDL_GAME";
-    private String jdbcUsername = "root";
+    private String jdbcUsername = "dbuser";
     private String jdbcPassword = "Root123456789";
 
     private static DatabaseConnection instance;

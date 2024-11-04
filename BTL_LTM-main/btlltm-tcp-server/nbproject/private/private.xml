@@ -3,23 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/E:/Downloads/BTL_LTM-main/BTL_LTM-main/btlltm-tcp-server/src/view/ServerView.java</file>
-            <file>file:/E:/Downloads/BTL_LTM-main/BTL_LTM-main/btlltm-tcp-server/src/model/RoundModel.java</file>
-            <file>file:/E:/Downloads/BTL_LTM-main/BTL_LTM-main/btlltm-tcp-server/src/helper/CountDownTimer.java</file>
-            <file>file:/E:/Downloads/BTL_LTM-main/BTL_LTM-main/btlltm-tcp-server/src/controller/UserController.java</file>
-            <file>file:/E:/Downloads/BTL_LTM-main/BTL_LTM-main/btlltm-tcp-server/src/helper/RandomString.java</file>
-            <file>file:/E:/Downloads/BTL_LTM-main/BTL_LTM-main/btlltm-tcp-server/src/model/UserModel.java</file>
-            <file>file:/E:/Downloads/BTL_LTM-main/BTL_LTM-main/btlltm-tcp-server/src/service/RoomManager.java</file>
-            <file>file:/E:/Downloads/BTL_LTM-main/BTL_LTM-main/btlltm-tcp-server/src/model/GameModel.java</file>
-            <file>file:/E:/Downloads/BTL_LTM-main/BTL_LTM-main/btlltm-tcp-server/src/service/Room.java</file>
-            <file>file:/E:/Downloads/BTL_LTM-main/BTL_LTM-main/btlltm-tcp-server/src/helper/CustumDateTimeFormatter.java</file>
-            <file>file:/E:/Downloads/BTL_LTM-main/BTL_LTM-main/btlltm-tcp-server/src/connection/DatabaseConnection.java</file>
-            <file>file:/E:/Downloads/BTL_LTM-main/BTL_LTM-main/btlltm-tcp-server/src/service/ClientManager.java</file>
-            <file>file:/E:/Downloads/BTL_LTM-main/BTL_LTM-main/btlltm-tcp-server/src/controller/GameController.java</file>
-            <file>file:/E:/Downloads/BTL_LTM-main/BTL_LTM-main/btlltm-tcp-server/src/run/ServerRun.java</file>
-            <file>file:/E:/Downloads/BTL_LTM-main/BTL_LTM-main/btlltm-tcp-server/src/controller/RoundController.java</file>
-            <file>file:/E:/Downloads/BTL_LTM-main/BTL_LTM-main/btlltm-tcp-server/src/service/Client.java</file>
-            <file>file:/E:/Downloads/BTL_LTM-main/BTL_LTM-main/btlltm-tcp-server/src/connection/db.sql</file>
+            <file>file:/C:/Users/VICTUS/Desktop/BTL_LTM_v3/BTL_LTM/BTL_LTM-main/btlltm-tcp-server/src/service/Room.java</file>
+            <file>file:/C:/Users/VICTUS/Desktop/BTL_LTM_v3/BTL_LTM/BTL_LTM-main/btlltm-tcp-server/src/service/Client.java</file>
+            <file>file:/C:/Users/VICTUS/Desktop/BTL_LTM_v3/BTL_LTM/BTL_LTM-main/btlltm-tcp-server/src/run/ServerRun.java</file>
         </group>
     </open-files>
 </project-private>

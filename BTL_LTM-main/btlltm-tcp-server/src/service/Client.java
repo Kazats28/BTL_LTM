@@ -59,11 +59,11 @@ public class Client implements Runnable {
                     case "REGISTER":
                         onReceiveRegister(received);
                         break;
+                    case "GET_LIST_ONLINE":
+                        onReceiveGetListOnline();
+                        break;
                     case "GET_INFO_USER":
                         onReceiveGetInfoUser(received);
-                        break;
-                    case "GET_INFO":
-                        onReceiveGetInfo(received);
                         break;
                     case "LOGOUT":
                         onReceiveLogout();
@@ -109,12 +109,16 @@ public class Client implements Runnable {
                     case "SUBMIT_RESULT":
                         onReceiveSubmitResult(received);
                         break;
+//                    case "ASK_PLAY_AGAIN":
+//                        onReceiveAskPlayAgain(received);
+//                        break;
                     case "REQUEST_LEADERBOARD":
                         onReceiveRequestLeaderboard(received);
-                        break;                   
+                        break;
+                    case "UPDATE_HOME_SCREEN_SCORE":
+                        onReceiveUpdateHomeScreenScore(received);
                     case "EXIT":
                         running = false;
-                        break;
                 }
 
             } catch (IOException ex) {
@@ -409,7 +413,18 @@ public class Client implements Runnable {
         sendData("REQUEST_LEADERBOARD;error;Failed to retrieve leaderboard data");
         }
     }
-
+    
+    private void onReceiveUpdateHomeScreenScore(String received) throws SQLException {
+        String[] splitted = received.split(";");
+        String username = splitted[1];
+        // get info user
+        String result = new UserController().getInfoUser(username);
+        String status = "";
+        Client c = ServerRun.clientManager.find(username);
+        // send result
+        sendData("UPDATE_HOME_SCREEN_SCORE" + ";" + result);
+    }
+    
     private void onReceiveStartGame(String received) throws SQLException {
         String[] splitted = received.split(";");
         String roomId = splitted[3];

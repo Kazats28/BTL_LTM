@@ -128,11 +128,17 @@ public class SocketHandler {
                     case "START_GAME":
                         onReceiveStartGame(received);
                         break;
+//                    case "RESULT_GAME":
+//                        onReceiveResultGame(received);
+//                        break;
                     case "NEW_ROUND":
                         onReceiveNewRound(received);
                         break;
                     case "ROUND_RESULT":
                         onReceiveRoundResult(received);
+                        break;
+                    case "UPDATE_HOME_SCREEN_SCORE":
+                        onReceiveUpdateHomeScreenScore(received);
                         break;
                     case "GAME_END":
                         onReceiveGameEnd(received);
@@ -596,10 +602,44 @@ public class SocketHandler {
     private void onReceiveGameEnd(String received) {
         String[] splitted = received.split(";");
         String winner = splitted[1];
-        float finalScore = Float.parseFloat(splitted[2]);
-        ClientRun.gameView.showGameEnd(winner, finalScore);
+        String loser = splitted[2];
+        float winnerScore = Float.parseFloat(splitted[3]);
+        float loserScore = Float.parseFloat(splitted[4]);
+        
+        // Update local score
+        if (this.loginUser.equals(winner)){
+            this.score = winnerScore;
+        }
+        else this.score = loserScore;
+        
+        // Update home view if it exists
+        if (ClientRun.homeView != null) {
+             sendData("UPDATE_HOME_SCREEN_SCORE;" + loginUser);
+            // ClientRun.homeView.setUserScore(this.score);
+            // Request updated user info to refresh the view
+        }
+        
+        ClientRun.gameView.showGameEnd(winner, this.score);
     }
     
+    private void onReceiveUpdateHomeScreenScore(String received){
+        // get status from data
+        String[] splitted = received.split(";");
+        String status = splitted[1];
+
+        if (status.equals("success")) {
+            String userName = splitted[2];
+            String userScore =  splitted[3];
+            // String userWin =  splitted[4];
+            // String userDraw =  splitted[5];
+            // String userLose =  splitted[6];
+            // String userAvgCompetitor =  splitted[7];
+            // String userAvgTime =  splitted[8];
+            // String userStatus = splitted[9];
+
+            ClientRun.homeView.setUserScore(Float.valueOf(userScore));
+        }
+    }
     // get set
     public String getLoginUser() {
         return loginUser;
@@ -632,5 +672,7 @@ public class SocketHandler {
     public void setScore(float score) {
         this.score = score;
     }
+
+    
     
 }

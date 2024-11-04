@@ -47,6 +47,7 @@ public class Room {
     private final int maxRounds = 10;
     private String currentProduct;
     private String winner;
+    private String round_winner;
     private int currentPrice;
     private int player1Guess;
     private int player2Guess;
@@ -113,38 +114,84 @@ public class Room {
             },
             1
         );
-        new RoundController().insertRound(gameId, currentRound, winner, currentProduct, currentPrice, player1Guess, player2Guess);
+        new RoundController().insertRound(gameId, currentRound, round_winner, currentProduct, currentPrice, player1Guess, player2Guess);
     }
     
+//    private void endGame() throws SQLException {
+//        gameStarted = false;
+//        String winnerGame = (player1Score > player2Score) ? client1.getLoginUser() : 
+//                        (player2Score > player1Score) ? client2.getLoginUser() : "DRAW";
+//        float finalScore = Math.max(player1Score, player2Score);
+//        broadcast("GAME_END;" + winnerGame + ";" + finalScore);
+////        updateUserScores(winnerGame);
+//        endTime = LocalDateTime.now();
+//        GameModel game = new GameController().getGame(gameId);
+//        game.setEndTime(endTime);
+//        game.setWinner(winnerGame);
+//        game.setScore1(player1Score);
+//        game.setScore2(player2Score);
+//        game.setUserLeaveGame("");
+//        new GameController().updateGame(game, gameId);
+//        matchTimer = new CountDownTimer(10);
+//        matchTimer.setTimerCallBack(
+//            null,
+//            (Callable) () -> {
+//                time = "" + CustumDateTimeFormatter.secondsToMinutes(matchTimer.getCurrentTick());
+//                System.out.println(time);
+//                if (time.equals("00:00")) {
+//                    matchTimer.pause();
+//                    deleteRoom();
+//                }
+//                return null;
+//            },
+//            1
+//        );
+//    }
+    
     private void endGame() throws SQLException {
-        gameStarted = false;
-        String winnerGame = (player1Score > player2Score) ? client1.getLoginUser() : 
-                        (player2Score > player1Score) ? client2.getLoginUser() : "DRAW";
-        float finalScore = Math.max(player1Score, player2Score);
-        broadcast("GAME_END;" + winnerGame + ";" + finalScore);
-        updateUserScores(winnerGame);
+        winner = determineWinner();
+        String loser = null;
+        // Update scores in database first
+        if (winner.equals("DRAW")) {
+                loser = "DRAW";
+            } else if (winner.equals(client1.getLoginUser())) {
+                loser = client2.getLoginUser();
+            } else {
+                loser = client1.getLoginUser();
+        }
+        updateUserScores();
+        broadcast("GAME_END;" + winner + ";" + loser + ";" + Math.max(player1Score, player2Score) + ";" + Math.min(player1Score, player2Score));
         endTime = LocalDateTime.now();
         GameModel game = new GameController().getGame(gameId);
         game.setEndTime(endTime);
-        game.setWinner(winnerGame);
+        game.setWinner(winner);
         game.setScore1(player1Score);
         game.setScore2(player2Score);
         game.setUserLeaveGame("");
         new GameController().updateGame(game, gameId);
-        matchTimer = new CountDownTimer(10);
-        matchTimer.setTimerCallBack(
-            null,
-            (Callable) () -> {
-                time = "" + CustumDateTimeFormatter.secondsToMinutes(matchTimer.getCurrentTick());
-                System.out.println(time);
-                if (time.equals("00:00")) {
-                    matchTimer.pause();
-                    deleteRoom();
-                }
-                return null;
-            },
-            1
-        );
+        
+        // Reset game state
+        gameStarted = false;
+        currentRound = 0;
+        player1Score = 0;
+        player2Score = 0;
+        
+        // Clear client game states
+        client1.setJoinedRoom(null);
+        client2.setJoinedRoom(null);
+        
+        // Remove room from server
+        ServerRun.roomManager.remove(this);
+    }
+    
+    private String determineWinner() {
+        if (player1Score > player2Score) {
+            return client1.getLoginUser();
+        } else if (player2Score > player1Score) {
+            return client2.getLoginUser();
+        } else {
+            return "DRAW";
+        }
     }
     
     private void resetRoundData() {
@@ -171,6 +218,9 @@ public class Room {
     public void calculateRoundResult() {
         float roundScore1 = 0;
         float roundScore2 = 0;
+        round_winner = "";
+        
+        
         if (player1Guess > currentPrice && player2Guess > currentPrice) {
             if (player1Guess < player2Guess) roundScore1 = 1;
             else if (player2Guess < player1Guess) roundScore2 = 1;
@@ -190,24 +240,33 @@ public class Room {
         } else {
             roundScore2 = 1;
         }
-
+        
+        if (player1Guess == 0 && player2Guess != 0){
+            roundScore2 = 1;
+            roundScore1 = 0;
+        }
+        else if (player1Guess != 0 && player2Guess == 0){
+            roundScore1 = 1;
+            roundScore2 = 0;
+        }
+        
         player1Score += roundScore1;
         player2Score += roundScore2;
         
         if (roundScore1  == 1){
-            winner = client1.getLoginUser();
+            round_winner = client1.getLoginUser();
         }
         else if (roundScore2 == 1) {
-            winner = client2.getLoginUser();
+            round_winner = client2.getLoginUser();
         }
         else {
-            winner = "DRAW";
+            round_winner = "DRAW";
         }
-        broadcast("ROUND_RESULT;" + winner + ";" + currentPrice + ";" + client1.getLoginUser() + ";" + client2.getLoginUser() + ";" + player1Guess + ";" + player2Guess + ";" + player1Score + ";" + player2Score);
+        broadcast("ROUND_RESULT;" + round_winner + ";" + currentPrice + ";" + client1.getLoginUser() + ";" + client2.getLoginUser() + ";" + player1Guess + ";" + player2Guess + ";" + player1Score + ";" + player2Score);
     }
     
     
-    private void updateUserScores(String winner) {
+    private void updateUserScores() {
         try {
             if (winner.equals("DRAW")) {
                 draw();
