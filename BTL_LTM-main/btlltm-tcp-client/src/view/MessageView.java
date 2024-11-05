@@ -1,6 +1,8 @@
 package view;
 
 import java.awt.event.KeyEvent;
+import java.util.concurrent.Executors;
+
 import javax.swing.JOptionPane;
 import run.ClientRun;
 
@@ -180,11 +182,16 @@ public class MessageView extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new MessageView().setVisible(true);
-            }
-        });
+        Executors.newCachedThreadPool().submit(new Runnable() {
+                public void run() {
+                    new MessageView().setVisible(true);
+                }
+            });
+        // java.awt.EventQueue.invokeLater(new Runnable() {
+        //     public void run() {
+        //         new MessageView().setVisible(true);
+        //     }
+        // });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

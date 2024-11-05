@@ -61,7 +61,7 @@ public class Client2Run {
         new Thread(() -> {
             // call controller
             String result = ClientRun.getSocketHandler().connect(ip, port);
-
+            
             // check result
             if (result.equals("success")) {
                 onSuccess();

@@ -270,12 +270,11 @@ public class HomeView extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(HomeView.this, "Bạn chưa chọn ai để gửi lời mời. Hãy thực hiện lại!" , "LỖI", JOptionPane.ERROR_MESSAGE);
         } else {
             String userSelected = String.valueOf(tblUser.getValueAt(row, 0));
-            
-            // check user online/in game
+            Thread currentThread = Thread.currentThread();
+        
+            // Display information about the current thread
+            System.out.println("Current thread: " + currentThread);
             ClientRun.getSocketHandler().checkStatusUser(userSelected);
-            while (statusCompetitor == "") {
-                
-            }
             switch (statusCompetitor) {
                 case "ONLINE" -> ClientRun.getSocketHandler().inviteToPlay(userSelected);
                 case "OFFLINE" -> JOptionPane.showMessageDialog(HomeView.this, userSelected + "hiện đang offline." , "LỖI", JOptionPane.ERROR_MESSAGE);
