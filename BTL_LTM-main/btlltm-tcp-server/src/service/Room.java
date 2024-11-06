@@ -13,6 +13,7 @@ import java.util.concurrent.Callable;
 import model.UserModel;
 import run.ServerRun;
 import java.util.Random;
+import javax.management.timer.TimerMBean;
 import model.GameModel;
 
 class Product {
@@ -66,10 +67,8 @@ public class Room {
         gameStarted = true;       
         startNewRound();
         startTime = LocalDateTime.now();
-        String result = new GameController().insertGame(startTime, client1.getLoginUser(), client2.getLoginUser());
-        while (!result.equals("success")){
-        }
-        gameId = new GameController().getGameId(startTime, client1.getLoginUser(), client2.getLoginUser());
+        gameId = new GameController().insertGame(startTime, client1.getLoginUser(), client2.getLoginUser());
+        //gameId = new GameController().getGameId(startTime, client1.getLoginUser(), client2.getLoginUser());
     }
     
     private void startNewRound() throws SQLException {
@@ -129,7 +128,7 @@ public class Room {
         game.setWinner(winnerGame);
         game.setScore1(player1Score);
         game.setScore2(player2Score);
-        game.setUserLeaveGame("");
+        game.setUserLeaveGame(" ");
         new GameController().updateGame(game, gameId);
         matchTimer = new CountDownTimer(10);
         matchTimer.setTimerCallBack(
@@ -305,6 +304,8 @@ public class Room {
     }
     
     public void userLeaveGame (String username) throws SQLException {
+        matchTimer.pause();
+        matchTimerRound.pause();
         endTime = LocalDateTime.now();
         GameModel game = new GameController().getGame(gameId);
         game.setEndTime(endTime);
@@ -312,7 +313,7 @@ public class Room {
         game.setScore2(player2Score);
         game.setUserLeaveGame(username);
         if (client1.getLoginUser().equals(username)) {
-            game.setWinner(client2.getLoginUser());           
+            game.setWinner(client2.getLoginUser());      
             client2Win(0);
         } else if (client2.getLoginUser().equals(username)) {
             game.setWinner(client1.getLoginUser());

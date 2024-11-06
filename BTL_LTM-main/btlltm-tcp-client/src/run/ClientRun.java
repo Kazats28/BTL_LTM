@@ -2,7 +2,9 @@ package run;
 
 import controller.SocketHandler;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 import view.GameView;
+import view.HistoryView;
 import view.HomeView;
 import view.InfoPlayerView;
 import view.LoginView;
@@ -17,7 +19,8 @@ public class ClientRun {
         INFOPLAYER,
         MESSAGEVIEW,
         GAMEVIEW,
-        LEADERBOARDVIEW
+        LEADERBOARDVIEW,
+        HISTORYVIEW
     }
 
     // scenes
@@ -28,6 +31,7 @@ public class ClientRun {
     public static InfoPlayerView infoPlayerView;                        
     public static MessageView messageView;
     public static LeaderboardView leaderboardView;
+    public static HistoryView historyView;
 
     // controller 
     // change
@@ -48,6 +52,7 @@ public class ClientRun {
         messageView = new MessageView();
         gameView = new GameView();
         leaderboardView = new LeaderboardView();
+        historyView = new HistoryView();
     }
     
     private void connect() {
@@ -109,6 +114,10 @@ public class ClientRun {
                     leaderboardView = new LeaderboardView();
                     leaderboardView.setVisible(true);
                     break;
+                case HISTORYVIEW:
+                    historyView = new HistoryView();
+                    historyView.setVisible(true);
+                    break;
                 default:
                     break;
             }
@@ -139,6 +148,9 @@ public class ClientRun {
                 case LEADERBOARDVIEW:
                     leaderboardView.dispose();
                     break;
+                case HISTORYVIEW:
+                    historyView.dispose();
+                    break;
                 default:
                     break;
             }
@@ -153,6 +165,7 @@ public class ClientRun {
         messageView.dispose();
         gameView.dispose();
         leaderboardView.dispose();
+        historyView.dispose();
     }
 
     public static SocketHandler getSocketHandler() {

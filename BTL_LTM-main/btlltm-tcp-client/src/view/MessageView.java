@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.event.KeyEvent;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import run.ClientRun;
 
@@ -15,6 +16,8 @@ public class MessageView extends javax.swing.JFrame {
      */
     public MessageView() {
         initComponents();
+        ImageIcon icon = new ImageIcon(getClass().getResource("/image/icon.png"));
+        setIconImage(icon.getImage());
         
         // close window event
         this.addWindowListener(new java.awt.event.WindowAdapter() {

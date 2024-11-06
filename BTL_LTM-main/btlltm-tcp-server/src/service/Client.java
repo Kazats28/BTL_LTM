@@ -5,6 +5,7 @@
  */
 package service;
 
+import controller.GameController;
 import controller.UserController;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -14,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.SQLException;
 import java.util.List;
+import model.GameModel;
 import model.UserModel;
 import run.ServerRun;
 
@@ -111,7 +113,10 @@ public class Client implements Runnable {
                         break;
                     case "REQUEST_LEADERBOARD":
                         onReceiveRequestLeaderboard(received);
-                        break;                   
+                        break;     
+                    case "REQUEST_HISTORY":
+                        onReceiveRequestHistory(received);
+                        break;
                     case "EXIT":
                         running = false;
                         break;
@@ -390,23 +395,50 @@ public class Client implements Runnable {
         
         joinedRoom.handleGuess(this, guess);
     } 
-        
-    private void onReceiveRequestLeaderboard(String received) {
-    try {
-        List<UserModel> users = new UserController().getAllUsers();
+    
+    private void onReceiveRequestHistory(String received) {
+        String[] splitted = received.split(";");
+        String user = splitted[1];
+        try {
+            List<GameModel> games = new GameController().getAllGames(user);
 
-        StringBuilder leaderboardData = new StringBuilder("REQUEST_LEADERBOARD;");
-        leaderboardData.append(users.size()).append(";");
+            StringBuilder historyData = new StringBuilder("REQUEST_HISTORY;");
+            historyData.append(games.size()).append(";");
 
-        for (UserModel user : users) {
-            leaderboardData.append(user.getUserName()).append(";")
-                           .append(user.getScore()).append(";");
+            for (GameModel game : games) {
+                historyData.append(game.getStartTime()).append(";")
+                           .append(game.getEndTime()).append(";")
+                           .append(game.getWinner()).append(";") 
+                           .append(game.getUser1()).append(";")
+                           .append(game.getScore1()).append(";")
+                           .append(game.getUser2()).append(";")
+                           .append(game.getScore2()).append(";")
+                           .append(game.getUserLeaveGame()).append(";");
+            }
+
+            sendData(historyData.toString());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            sendData("REQUEST_HISTORY;error;Failed to retrieve history game data");
         }
+    }
+    
+    private void onReceiveRequestLeaderboard(String received) {
+        try {
+            List<UserModel> users = new UserController().getAllUsers();
 
-        sendData(leaderboardData.toString());
-    } catch (SQLException e) {
-        e.printStackTrace();
-        sendData("REQUEST_LEADERBOARD;error;Failed to retrieve leaderboard data");
+            StringBuilder leaderboardData = new StringBuilder("REQUEST_LEADERBOARD;");
+            leaderboardData.append(users.size()).append(";");
+
+            for (UserModel user : users) {
+                leaderboardData.append(user.getUserName()).append(";")
+                               .append(user.getScore()).append(";");
+            }
+
+            sendData(leaderboardData.toString());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            sendData("REQUEST_LEADERBOARD;error;Failed to retrieve leaderboard data");
         }
     }
 

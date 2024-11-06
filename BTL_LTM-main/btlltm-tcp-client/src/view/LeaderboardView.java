@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.Vector;
+import javax.swing.table.DefaultTableCellRenderer;
 
 public class LeaderboardView extends JFrame {
     private JTable tblLeaderboard;
@@ -11,6 +12,8 @@ public class LeaderboardView extends JFrame {
 
     public LeaderboardView() {
         initComponents();
+        ImageIcon icon = new ImageIcon(getClass().getResource("/image/icon.png"));
+        setIconImage(icon.getImage());
     }
 
     private void initComponents() {
@@ -38,5 +41,10 @@ public class LeaderboardView extends JFrame {
     public void setLeaderboardData(Vector<Vector<Object>> data, Vector<String> columnNames) {
         DefaultTableModel model = new DefaultTableModel(data, columnNames);
         tblLeaderboard.setModel(model);
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < tblLeaderboard.getColumnCount(); i++) {
+            tblLeaderboard.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
     }
 }

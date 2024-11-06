@@ -16,7 +16,7 @@ public class UserController {
     
     private final String CHECK_USER = "SELECT userId from users WHERE username = ? limit 1";
     
-    private final String LOGIN_USER = "SELECT username, password, score FROM users WHERE username=? AND password=?";
+    private final String LOGIN_USER = "SELECT username, password, score, win, draw, lose FROM users WHERE username=? AND password=?";
     
     private final String GET_INFO_USER = "SELECT username, password, score, win, draw, lose FROM users WHERE username=?";
     
@@ -64,7 +64,10 @@ public class UserController {
             
             if (r.next()) {
                 float score = r.getFloat("score");
-                return "success;" + username + ";" + score;
+                int win = r.getInt("win");
+                int draw = r.getInt("draw");
+                int lose = r.getInt("lose");
+                return "success;" + username + ";" + score + ";" + win + ";" + draw + ";" + lose;
             } else {
                 return "failed;" + "Tên người dùng hoặc mật khẩu không đúng!";
             }

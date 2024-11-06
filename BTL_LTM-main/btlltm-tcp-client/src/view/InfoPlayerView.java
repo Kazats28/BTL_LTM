@@ -5,6 +5,8 @@
  */
 package view;
 
+import javax.swing.ImageIcon;
+
 /**
  *
  * @author admin
@@ -16,6 +18,8 @@ public class InfoPlayerView extends javax.swing.JFrame {
      */
     public InfoPlayerView() {
         initComponents();
+        ImageIcon icon = new ImageIcon(getClass().getResource("/image/icon.png"));
+        setIconImage(icon.getImage());
     }
 
     public void setInfoUser (String username, String score, String win, String draw, String lose, String status) {

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +26,6 @@ public class SocketHandler {
     String loginUser = null; // lưu tài khoản đăng nhập hiện tại
     String roomIdPresent = null; // lưu room hiện tại
     float score = 0;
-    
     Thread listener = null;
 
     public String connect(String addr, int port) {
@@ -124,6 +125,9 @@ public class SocketHandler {
                         break;
                     case "REQUEST_LEADERBOARD":
                         onReceiveRequestLeaderboard(received);
+                        break;
+                    case "REQUEST_HISTORY":
+                        onReceiveRequestHistory(received);
                         break;
                     case "START_GAME":
                         onReceiveStartGame(received);
@@ -229,6 +233,17 @@ public class SocketHandler {
         sendData("REQUEST_LEADERBOARD");
     }
     
+    public void requestHistoryGame(String user) {
+        sendData("REQUEST_HISTORY;" + user);
+    }
+    
+    public void submitGuess(int guess) {
+        sendData("SUBMIT_RESULT;" + loginUser + ";" + roomIdPresent + ";" + guess);
+    }
+    
+    public void getInfo() {
+        sendData("GET_INFO;" + loginUser);
+    }
     /***
      * Handle send data to server
      */
@@ -257,7 +272,8 @@ public class SocketHandler {
         } else if (status.equals("success")) {
             // lưu user login
             this.loginUser = splitted[2];
-            this.score = Float.parseFloat(splitted[3]) ;
+            this.score = Float.parseFloat(splitted[3]);
+            
             // chuyển scene
             ClientRun.closeScene(ClientRun.SceneName.LOGIN);
             ClientRun.openScene(ClientRun.SceneName.HOMEVIEW);
@@ -265,6 +281,9 @@ public class SocketHandler {
             // auto set info user
             ClientRun.homeView.setUsername(loginUser);
             ClientRun.homeView.setUserScore(score);
+            ClientRun.homeView.setUserScore1(splitted[4]);
+            ClientRun.homeView.setUserScore2(splitted[5]);
+            ClientRun.homeView.setUserScore3(splitted[6]);
         }
     }
     
@@ -519,6 +538,47 @@ public class SocketHandler {
         ClientRun.homeView.setStatusCompetitor(status);
     }
     
+    private void onReceiveRequestHistory(String received) {
+        String[] splitted = received.split(";");
+        System.out.println();
+        int gameCount = Integer.parseInt(splitted[1]);
+
+        Vector<Vector<Object>> historyData = new Vector<>();
+        Vector<String> columnNames = new Vector<>();
+        columnNames.add("startTime");
+        columnNames.add("endTime");
+        columnNames.add("winner");
+        columnNames.add("user1");
+        columnNames.add("score1");
+        columnNames.add("user2");
+        columnNames.add("score2");
+        columnNames.add("userLeaveGame");
+        
+        for (int i = 0; i < gameCount; i++) {
+            Vector<Object> row = new Vector<>();
+            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");  
+            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
+            LocalDateTime start = LocalDateTime.parse(splitted[2 + i * 8], inputFormatter);
+            String startTime = start.format(outputFormatter);
+            LocalDateTime end = LocalDateTime.parse(splitted[3 + i * 8], inputFormatter);
+            String endTime = end.format(outputFormatter);
+            row.add(startTime);
+            row.add(endTime);
+            row.add(splitted[4 + i * 8]);
+            row.add(splitted[5 + i * 8]);
+            row.add(splitted[6 + i * 8]);
+            row.add(splitted[7 + i * 8]);
+            row.add(splitted[8 + i * 8]);
+            row.add(splitted[9 + i * 8]);
+            historyData.add(row);
+        }
+
+        SwingUtilities.invokeLater(() -> {
+            ClientRun.historyView.setHistoryData(historyData, columnNames);
+            ClientRun.historyView.setVisible(true);
+        });
+    }
+    
     private void onReceiveRequestLeaderboard(String received) {
         String[] splitted = received.split(";");
         int userCount = Integer.parseInt(splitted[1]);
@@ -538,7 +598,7 @@ public class SocketHandler {
         }
 
         // Sort the leaderboard data by score in ascending order
-        leaderboardData.sort((a, b) -> Float.compare((Float) b.get(2), (Float) a.get(2)));
+//        leaderboardData.sort((a, b) -> Float.compare((Float) b.get(2), (Float) a.get(2)));
 
         // Update ranks
         for (int i = 0; i < leaderboardData.size(); i++) {
@@ -549,14 +609,6 @@ public class SocketHandler {
             ClientRun.leaderboardView.setLeaderboardData(leaderboardData, columnNames);
             ClientRun.leaderboardView.setVisible(true);
         });
-    }
-
-    public void submitGuess(int guess) {
-        sendData("SUBMIT_RESULT;" + loginUser + ";" + roomIdPresent + ";" + guess);
-    }
-    
-    public void getInfo() {
-        sendData("GET_INFO;" + loginUser);
     }
     
     private void onReceiveNewRound(String received) {

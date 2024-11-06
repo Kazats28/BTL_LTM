@@ -13,12 +13,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.RoundRectangle2D;
 import javax.swing.border.*;
+import javax.swing.table.DefaultTableCellRenderer;
 /**
  *
  * @author admin
  */
 public class HomeView extends javax.swing.JFrame {
+    String loginUserName = "";
     String statusCompetitor = "";
     /**
      * Creates new form HomeView
@@ -29,6 +32,19 @@ public class HomeView extends javax.swing.JFrame {
     
     public HomeView() {
         initComponents();
+        btnPlay.setFont(new Font("Sogoe UI", Font.PLAIN, 12));
+        btnGetInfo.setFont(new Font("Sogoe UI", Font.PLAIN, 12));
+        btnMessage.setFont(new Font("Sogoe UI", Font.PLAIN, 12));
+        btnLeaderboard.setFont(new Font("Sogoe UI", Font.PLAIN, 12));
+        btnLeaderboard1.setFont(new Font("Sogoe UI", Font.PLAIN, 12));
+        btnExit.setFont(new Font("Sogoe UI", Font.BOLD, 12));
+        btnLogout.setFont(new Font("Sogoe UI", Font.BOLD, 12));
+        Color backgroundColor = new Color(243, 219, 149, 255);
+        tblUser.setBackground(backgroundColor);
+        tblUser.getTableHeader().setBackground(backgroundColor);
+        jScrollPane2.getViewport().setBackground(backgroundColor);
+        ImageIcon icon = new ImageIcon(getClass().getResource("/image/icon.png"));
+        setIconImage(icon.getImage());
         setupWindowListener();
     }
     
@@ -36,8 +52,19 @@ public class HomeView extends javax.swing.JFrame {
         statusCompetitor = status;
     }
     
+    public class NonEditableTableModel extends DefaultTableModel {
+        public NonEditableTableModel(Vector data, Vector columnNames) {
+            super(data, columnNames); // Gọi constructor của lớp cha
+        }
+        
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false; // Tắt khả năng chỉnh sửa
+        }
+    }
+    
     public void setListUser(Vector vdata, Vector vheader) {
-        tblUser.setModel(new DefaultTableModel(vdata, vheader));
+        tblUser.setModel(new NonEditableTableModel(vdata, vheader));
     }
     
     public void resetTblUser () {
@@ -47,6 +74,7 @@ public class HomeView extends javax.swing.JFrame {
     
     public void setUsername(String username) {
         infoUsername.setText("Tên người dùng: " + username);
+        this.loginUserName = username;
     }
     
     public void setUserScore(float score) {
@@ -73,10 +101,13 @@ public class HomeView extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLayeredPane1 = new javax.swing.JLayeredPane();
         btnPlay = new javax.swing.JButton();
         btnMessage = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblUser = new javax.swing.JTable();
+        jLabel4 = new javax.swing.JLabel();
         btnLogout = new javax.swing.JButton();
         btnGetInfo = new javax.swing.JButton();
         btnExit = new javax.swing.JButton();
@@ -87,9 +118,17 @@ public class HomeView extends javax.swing.JFrame {
         infoUserScore1 = new javax.swing.JLabel();
         infoUserScore2 = new javax.swing.JLabel();
         infoUserScore3 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        btnLeaderboard1 = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Game Đoán Giá");
+
+        jLayeredPane1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         btnPlay.setText("Mời");
         btnPlay.addActionListener(new java.awt.event.ActionListener() {
@@ -97,38 +136,46 @@ public class HomeView extends javax.swing.JFrame {
                 btnPlayActionPerformed(evt);
             }
         });
+        jLayeredPane1.add(btnPlay, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 450, 60, 30));
 
+        btnMessage.setBackground(new java.awt.Color(204, 204, 255));
         btnMessage.setText("Nhắn tin");
         btnMessage.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnMessageActionPerformed(evt);
             }
         });
+        jLayeredPane1.add(btnMessage, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 450, -1, 30));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel5.setText("Danh sách người dùng online");
+        jLayeredPane1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 180, 170, -1));
+
+        jScrollPane2.setBackground(new java.awt.Color(255, 255, 255));
+        jScrollPane2.setBorder(null);
+        jScrollPane2.setOpaque(false);
 
         tblUser.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Danh sách người dùng online"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class
-            };
 
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
             }
-        });
+        ));
         tblUser.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         tblUser.setName(""); // NOI18N
+        tblUser.setOpaque(false);
         tblUser.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane2.setViewportView(tblUser);
-        tblUser.getAccessibleContext().setAccessibleName("");
+
+        jLayeredPane1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 200, 200, 200));
+
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/right_board.png"))); // NOI18N
+        jLayeredPane1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 150, 260, 280));
 
         btnLogout.setBackground(new java.awt.Color(255, 51, 0));
-        btnLogout.setFont(new java.awt.Font("Segoe UI", 1, 11)); // NOI18N
+        btnLogout.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btnLogout.setForeground(new java.awt.Color(204, 255, 255));
         btnLogout.setText("Đăng xuất");
         btnLogout.addActionListener(new java.awt.event.ActionListener() {
@@ -136,16 +183,19 @@ public class HomeView extends javax.swing.JFrame {
                 btnLogoutActionPerformed(evt);
             }
         });
+        jLayeredPane1.add(btnLogout, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 450, 100, 30));
 
+        btnGetInfo.setBackground(new java.awt.Color(204, 255, 255));
         btnGetInfo.setText("Xem thông tin");
         btnGetInfo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnGetInfoActionPerformed(evt);
             }
         });
+        jLayeredPane1.add(btnGetInfo, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 450, -1, 30));
 
         btnExit.setBackground(new java.awt.Color(255, 51, 0));
-        btnExit.setFont(new java.awt.Font("Segoe UI", 1, 11)); // NOI18N
+        btnExit.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btnExit.setForeground(new java.awt.Color(204, 255, 255));
         btnExit.setText("THOÁT ");
         btnExit.addActionListener(new java.awt.event.ActionListener() {
@@ -153,15 +203,19 @@ public class HomeView extends javax.swing.JFrame {
                 btnExitActionPerformed(evt);
             }
         });
+        jLayeredPane1.add(btnExit, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 20, 80, 34));
 
+        btnLeaderboard.setBackground(new java.awt.Color(204, 204, 255));
         btnLeaderboard.setText("Bảng xếp hạng");
         btnLeaderboard.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnLeaderboardActionPerformed(evt);
             }
         });
+        jLayeredPane1.add(btnLeaderboard, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 450, -1, 30));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setOpaque(false);
 
         infoUsername.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         infoUsername.setText("Tên người dùng:");
@@ -178,12 +232,15 @@ public class HomeView extends javax.swing.JFrame {
         infoUserScore3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         infoUserScore3.setText("Số trận thua:");
 
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel6.setText("Thông tin người dùng");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(14, 14, 14)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(infoUsername, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -192,12 +249,17 @@ public class HomeView extends javax.swing.JFrame {
                             .addComponent(infoUserScore1, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(infoUserScore2, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(infoUserScore3, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addGap(0, 48, Short.MAX_VALUE))))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(47, 47, 47)
+                .addComponent(jLabel6)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(31, 31, 31)
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(infoUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(infoUserScore, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -210,54 +272,39 @@ public class HomeView extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jLayeredPane1.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 180, 220, 220));
+
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/left_board.png"))); // NOI18N
+        jLayeredPane1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 150, 260, -1));
+
+        btnLeaderboard1.setBackground(new java.awt.Color(204, 204, 255));
+        btnLeaderboard1.setText("Lịch sử đấu");
+        btnLeaderboard1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLeaderboard1ActionPerformed(evt);
+            }
+        });
+        jLayeredPane1.add(btnLeaderboard1, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 450, 100, 30));
+
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 40)); // NOI18N
+        jLabel7.setText("Game Đoán Giá");
+        jLayeredPane1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 20, 300, 50));
+
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/home.png"))); // NOI18N
+        jLayeredPane1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 700, 500));
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/BG.png"))); // NOI18N
+        jLayeredPane1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 630, 500));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(36, 36, 36)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(41, 41, 41))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnPlay, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(27, 27, 27)
-                                .addComponent(btnMessage)
-                                .addGap(29, 29, 29)
-                                .addComponent(btnGetInfo))
-                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(41, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(btnLeaderboard)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(26, 26, 26))))))
+            .addComponent(jLayeredPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 632, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(35, 35, 35)
-                .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(38, 38, 38)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(33, 33, 33)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnPlay, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnGetInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnLeaderboard, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(29, Short.MAX_VALUE))
+            .addComponent(jLayeredPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -274,7 +321,7 @@ public class HomeView extends javax.swing.JFrame {
             // check user online/in game
             ClientRun.getSocketHandler().checkStatusUser(userSelected);
             while (statusCompetitor == "") {
-                
+                ClientRun.getSocketHandler().checkStatusUser(userSelected);
             }
             switch (statusCompetitor) {
                 case "ONLINE" -> ClientRun.getSocketHandler().inviteToPlay(userSelected);
@@ -334,6 +381,11 @@ public class HomeView extends javax.swing.JFrame {
         // TODO add your handling code here:
         ClientRun.getSocketHandler().requestLeaderboard();
     }//GEN-LAST:event_btnLeaderboardActionPerformed
+
+    private void btnLeaderboard1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLeaderboard1ActionPerformed
+        // TODO add your handling code here:
+        ClientRun.getSocketHandler().requestHistoryGame(loginUserName);
+    }//GEN-LAST:event_btnLeaderboard1ActionPerformed
     private void setupWindowListener() {
         addWindowListener(new WindowAdapter() {
             @Override
@@ -345,12 +397,43 @@ public class HomeView extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(MessageView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(MessageView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(MessageView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(MessageView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new HomeView().setVisible(true);
+            }
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnExit;
     private javax.swing.JButton btnGetInfo;
     private javax.swing.JButton btnLeaderboard;
+    private javax.swing.JButton btnLeaderboard1;
     private javax.swing.JButton btnLogout;
     private javax.swing.JButton btnMessage;
     private javax.swing.JButton btnPlay;
@@ -359,6 +442,14 @@ public class HomeView extends javax.swing.JFrame {
     private javax.swing.JLabel infoUserScore2;
     private javax.swing.JLabel infoUserScore3;
     private javax.swing.JLabel infoUsername;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLayeredPane jLayeredPane1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable tblUser;
