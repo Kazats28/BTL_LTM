@@ -5,7 +5,6 @@
  */
 package view;
 
-import java.util.Enumeration;
 import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
 import run.ClientRun;
@@ -13,8 +12,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.geom.RoundRectangle2D;
-import javax.swing.border.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 /**
  *
@@ -23,6 +22,24 @@ import javax.swing.table.DefaultTableCellRenderer;
 public class HomeView extends javax.swing.JFrame {
     String loginUserName = "";
     String statusCompetitor = "";
+    Vector vdata;
+    Vector vheader;
+    DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                       boolean isSelected, boolean hasFocus,
+                                                       int row, int column) {
+            // Gọi renderer mặc định
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+            // Kiểm tra nếu là hàng được chọn thì bỏ màu nền
+            if (isSelected) {
+                cell.setBackground(table.getBackground()); // Đặt màu nền giống màu nền bảng
+                cell.setForeground(table.getForeground()); // Đặt màu chữ giống màu chữ bảng
+            }
+            return cell;
+        }
+    };
     /**
      * Creates new form HomeView
      */
@@ -32,20 +49,39 @@ public class HomeView extends javax.swing.JFrame {
     
     public HomeView() {
         initComponents();
-        btnPlay.setFont(new Font("Sogoe UI", Font.PLAIN, 12));
-        btnGetInfo.setFont(new Font("Sogoe UI", Font.PLAIN, 12));
-        btnMessage.setFont(new Font("Sogoe UI", Font.PLAIN, 12));
-        btnLeaderboard.setFont(new Font("Sogoe UI", Font.PLAIN, 12));
-        btnLeaderboard1.setFont(new Font("Sogoe UI", Font.PLAIN, 12));
-        btnExit.setFont(new Font("Sogoe UI", Font.BOLD, 12));
-        btnLogout.setFont(new Font("Sogoe UI", Font.BOLD, 12));
+        btnGetInfo.setVisible(false);
+        btnPlay.setVisible(false);
         Color backgroundColor = new Color(243, 219, 149, 255);
         tblUser.setBackground(backgroundColor);
-        tblUser.getTableHeader().setBackground(backgroundColor);
+        jScrollPane2.setBackground(backgroundColor);
         jScrollPane2.getViewport().setBackground(backgroundColor);
+        jScrollPane2.setColumnHeaderView(null);
         ImageIcon icon = new ImageIcon(getClass().getResource("/image/icon.png"));
         setIconImage(icon.getImage());
         setupWindowListener();
+        tblUser.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                // Kiểm tra xem có hàng nào được chọn
+                int selectedRow = tblUser.getSelectedRow();
+                if (selectedRow >= 0) {
+                    // Tính vị trí của hàng được chọn trong bảng
+                    Rectangle rowRect = tblUser.getCellRect(selectedRow, 0, true);
+                    int rowHeight = rowRect.height;
+                    Point tableLocationOnScreen = SwingUtilities.convertPoint(tblUser, rowRect.getLocation(), getContentPane());
+
+                    // Cập nhật vị trí và kích thước của các nút
+                    btnGetInfo.setBounds(tableLocationOnScreen.x + 90, tableLocationOnScreen.y, 50, rowHeight);
+                    btnPlay.setBounds(tableLocationOnScreen.x + 145, tableLocationOnScreen.y, 50, rowHeight);
+                    btnGetInfo.setVisible(true);
+                    btnPlay.setVisible(true);
+                } else {
+                    // Ẩn nút nếu không có hàng nào được chọn
+                    btnGetInfo.setVisible(false);
+                    btnPlay.setVisible(false);
+                }
+            }
+        });
     }
     
     public void setStatusCompetitor (String status) {
@@ -64,7 +100,15 @@ public class HomeView extends javax.swing.JFrame {
     }
     
     public void setListUser(Vector vdata, Vector vheader) {
+        this.vdata = vdata;
+        this.vheader = vheader;
+        updateListUser();
+    }
+    
+    
+    public void updateListUser() {
         tblUser.setModel(new NonEditableTableModel(vdata, vheader));
+        tblUser.getColumnModel().getColumn(0).setCellRenderer(renderer);
     }
     
     public void resetTblUser () {
@@ -102,6 +146,7 @@ public class HomeView extends javax.swing.JFrame {
     private void initComponents() {
 
         jLayeredPane1 = new javax.swing.JLayeredPane();
+        btnGetInfo = new javax.swing.JButton();
         btnPlay = new javax.swing.JButton();
         btnMessage = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
@@ -109,7 +154,6 @@ public class HomeView extends javax.swing.JFrame {
         tblUser = new javax.swing.JTable();
         jLabel4 = new javax.swing.JLabel();
         btnLogout = new javax.swing.JButton();
-        btnGetInfo = new javax.swing.JButton();
         btnExit = new javax.swing.JButton();
         btnLeaderboard = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
@@ -127,25 +171,35 @@ public class HomeView extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Game Đoán Giá");
+        setResizable(false);
 
         jLayeredPane1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        btnGetInfo.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        btnGetInfo.setText("Info");
+        btnGetInfo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGetInfoActionPerformed(evt);
+            }
+        });
+        jLayeredPane1.add(btnGetInfo, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 350, -1, 30));
+
+        btnPlay.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
         btnPlay.setText("Mời");
         btnPlay.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnPlayActionPerformed(evt);
             }
         });
-        jLayeredPane1.add(btnPlay, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 450, 60, 30));
+        jLayeredPane1.add(btnPlay, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 300, 60, 30));
 
-        btnMessage.setBackground(new java.awt.Color(204, 204, 255));
         btnMessage.setText("Nhắn tin");
         btnMessage.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnMessageActionPerformed(evt);
             }
         });
-        jLayeredPane1.add(btnMessage, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 450, -1, 30));
+        jLayeredPane1.add(btnMessage, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 450, -1, 30));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel5.setText("Danh sách người dùng online");
@@ -153,7 +207,6 @@ public class HomeView extends javax.swing.JFrame {
 
         jScrollPane2.setBackground(new java.awt.Color(255, 255, 255));
         jScrollPane2.setBorder(null);
-        jScrollPane2.setOpaque(false);
 
         tblUser.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -169,7 +222,7 @@ public class HomeView extends javax.swing.JFrame {
         tblUser.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane2.setViewportView(tblUser);
 
-        jLayeredPane1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 200, 200, 200));
+        jLayeredPane1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 200, 90, 200));
 
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/right_board.png"))); // NOI18N
         jLayeredPane1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 150, 260, 280));
@@ -183,16 +236,7 @@ public class HomeView extends javax.swing.JFrame {
                 btnLogoutActionPerformed(evt);
             }
         });
-        jLayeredPane1.add(btnLogout, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 450, 100, 30));
-
-        btnGetInfo.setBackground(new java.awt.Color(204, 255, 255));
-        btnGetInfo.setText("Xem thông tin");
-        btnGetInfo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnGetInfoActionPerformed(evt);
-            }
-        });
-        jLayeredPane1.add(btnGetInfo, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 450, -1, 30));
+        jLayeredPane1.add(btnLogout, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 450, -1, 30));
 
         btnExit.setBackground(new java.awt.Color(255, 51, 0));
         btnExit.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -205,14 +249,13 @@ public class HomeView extends javax.swing.JFrame {
         });
         jLayeredPane1.add(btnExit, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 20, 80, 34));
 
-        btnLeaderboard.setBackground(new java.awt.Color(204, 204, 255));
         btnLeaderboard.setText("Bảng xếp hạng");
         btnLeaderboard.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnLeaderboardActionPerformed(evt);
             }
         });
-        jLayeredPane1.add(btnLeaderboard, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 450, -1, 30));
+        jLayeredPane1.add(btnLeaderboard, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 450, -1, 30));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setOpaque(false);
@@ -277,14 +320,13 @@ public class HomeView extends javax.swing.JFrame {
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/left_board.png"))); // NOI18N
         jLayeredPane1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 150, 260, -1));
 
-        btnLeaderboard1.setBackground(new java.awt.Color(204, 204, 255));
         btnLeaderboard1.setText("Lịch sử đấu");
         btnLeaderboard1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnLeaderboard1ActionPerformed(evt);
             }
         });
-        jLayeredPane1.add(btnLeaderboard1, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 450, 100, 30));
+        jLayeredPane1.add(btnLeaderboard1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 450, -1, 30));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 40)); // NOI18N
         jLabel7.setText("Game Đoán Giá");
@@ -329,6 +371,7 @@ public class HomeView extends javax.swing.JFrame {
                 case "INGAME" -> JOptionPane.showMessageDialog(HomeView.this, userSelected + "hiện đang trong trận đấu." , "LỖI", JOptionPane.ERROR_MESSAGE);
             }
         }
+        updateListUser();
     }//GEN-LAST:event_btnPlayActionPerformed
 
     private void btnMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMessageActionPerformed
@@ -367,6 +410,7 @@ public class HomeView extends javax.swing.JFrame {
                ClientRun.getSocketHandler().getInfoUser(userSelected);
             }
         }
+        updateListUser();
     }//GEN-LAST:event_btnGetInfoActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
@@ -411,13 +455,13 @@ public class HomeView extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MessageView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(HomeView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MessageView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(HomeView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MessageView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(HomeView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MessageView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(HomeView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 

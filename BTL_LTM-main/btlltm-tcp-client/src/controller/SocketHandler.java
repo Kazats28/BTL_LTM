@@ -15,7 +15,6 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import run.ClientRun;
-import view.LeaderboardView;
 
 public class SocketHandler {
      
@@ -32,7 +31,7 @@ public class SocketHandler {
         try {
             // getting ip 
             InetAddress ip = InetAddress.getByName(addr);
-
+            
             // establish the connection with server port 
             s = new Socket();
             
@@ -144,7 +143,6 @@ public class SocketHandler {
                     case "EXIT":
                         running = false;
                 }
-
             } catch (IOException ex) {
                 Logger.getLogger(SocketHandler.class.getName()).log(Level.SEVERE, null, ex);
                 running = false;
@@ -165,9 +163,6 @@ public class SocketHandler {
         ClientRun.closeAllScene();
     }
     
-    /***
-     * Handle from client
-     */
     public void login(String email, String password) {
         // prepare data
         String data = "LOGIN" + ";" + email + ";" + password;
@@ -209,8 +204,7 @@ public class SocketHandler {
     }
     
     public void sendMessage (String userInvited, String message) {
-        String chat = "[" + loginUser + "] : " + message + "\n";
-        ClientRun.messageView.setContentChat(chat);
+        ClientRun.messageView.setContentChat(message + "\n", true);
             
         sendData("CHAT_MESSAGE;" + loginUser + ";" + userInvited  + ";" + message);
     }
@@ -244,9 +238,7 @@ public class SocketHandler {
     public void getInfo() {
         sendData("GET_INFO;" + loginUser);
     }
-    /***
-     * Handle send data to server
-     */
+    
     public void sendData(String data) {
         try {
             dos.writeUTF(data);
@@ -256,9 +248,6 @@ public class SocketHandler {
         }
     }
     
-    /***
-     * Handle receive data from server
-     */
     private void onReceiveLogin(String received) {
         // get status from data
         String[] splitted = received.split(";");
@@ -451,8 +440,7 @@ public class SocketHandler {
             String userInvited = splitted[3];
             String message = splitted[4];
             
-            String chat = "[" + userHost + "] : " + message + "\n";
-            ClientRun.messageView.setContentChat(chat);
+            ClientRun.messageView.setContentChat(message + "\n", false);
         }
     }
     
@@ -545,14 +533,13 @@ public class SocketHandler {
 
         Vector<Vector<Object>> historyData = new Vector<>();
         Vector<String> columnNames = new Vector<>();
-        columnNames.add("startTime");
-        columnNames.add("endTime");
-        columnNames.add("winner");
-        columnNames.add("user1");
-        columnNames.add("score1");
-        columnNames.add("user2");
-        columnNames.add("score2");
-        columnNames.add("userLeaveGame");
+        columnNames.add("Thời gian bắt đầu");
+        columnNames.add("Thời gian kết thúc");
+        columnNames.add("Kết quả");
+        columnNames.add("Điểm bạn");
+        columnNames.add("Đối thủ");
+        columnNames.add("Điểm đối thủ");
+        columnNames.add("Người rời trận");
         
         for (int i = 0; i < gameCount; i++) {
             Vector<Object> row = new Vector<>();
@@ -564,11 +551,25 @@ public class SocketHandler {
             String endTime = end.format(outputFormatter);
             row.add(startTime);
             row.add(endTime);
-            row.add(splitted[4 + i * 8]);
-            row.add(splitted[5 + i * 8]);
-            row.add(splitted[6 + i * 8]);
-            row.add(splitted[7 + i * 8]);
-            row.add(splitted[8 + i * 8]);
+            if (loginUser.equals(splitted[4 + i * 8])) {
+                row.add("Thắng");
+            }
+            else if (splitted[4 + i * 8].equals("DRAW")) {
+                row.add("Hòa");
+            }
+            else {
+                row.add("Thua");
+            }
+            if (loginUser.equals(splitted[5 + i * 8])) {
+                row.add(splitted[6 + i * 8]);
+                row.add(splitted[7 + i * 8]);
+                row.add(splitted[8 + i * 8]);
+            }
+            else if (loginUser.equals(splitted[7 + i * 8])) {
+                row.add(splitted[8 + i * 8]);
+                row.add(splitted[5 + i * 8]);
+                row.add(splitted[6 + i * 8]);
+            }           
             row.add(splitted[9 + i * 8]);
             historyData.add(row);
         }
@@ -615,8 +616,14 @@ public class SocketHandler {
         String[] splitted = received.split(";");
         String product = splitted[1];
         int price = Integer.parseInt(splitted[2]);
+        int minPrice = Integer.parseInt(splitted[3]);
+        int maxPrice = Integer.parseInt(splitted[4]);
+        String urlImage = splitted[3];
         ClientRun.gameView.setCurrentProduct(product);
         ClientRun.gameView.setCurrentPrice(price);
+        ClientRun.gameView.setUrlImage(urlImage);
+        ClientRun.gameView.setMinPrice(minPrice);
+        ClientRun.gameView.setMaxPrice(maxPrice);
         ClientRun.gameView.startNewRound(10);
     }
     

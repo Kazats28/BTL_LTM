@@ -56,7 +56,7 @@ public class ClientRun {
     }
     
     private void connect() {
-        String ip = "127.0.0.1";
+        String ip = "192.168.1.197";
         int port = 8282;
         // connect to server
         new Thread(() -> {
@@ -180,8 +180,20 @@ public class ClientRun {
         }
         return instance;
     }
-
+    private static void setNimbusLookAndFeel() {
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     public static void main(String[] args) {
+        setNimbusLookAndFeel();
         getInstance();
     }
 }

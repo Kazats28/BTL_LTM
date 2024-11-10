@@ -6,17 +6,12 @@
 package view;
 
 import java.util.concurrent.Callable;
-
 import run.ClientRun;
 import helper.*;
-import java.util.Enumeration;
-
+import java.awt.Image;
+import java.net.URI;
+import java.net.URL;
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.border.*;
-
 
 /**
  *
@@ -33,11 +28,10 @@ public class GameView extends javax.swing.JFrame {
     float competitorScore = 0;
     int competitorGuess = 0;
     String currentProduct = "";
+    String imageUrl = "";
     int currentPrice = 0;
-    
-    boolean answer = false;
-    boolean isSubmit = false;
-    
+    int minPrice = 0;
+    int maxPrice = 0;
     public GameView() {
         initComponents();
         ImageIcon icon = new ImageIcon(getClass().getResource("/image/icon.png"));
@@ -51,8 +45,11 @@ public class GameView extends javax.swing.JFrame {
         jLabel2.setVisible(false);
         jLabel3.setVisible(false);
         jLabel4.setVisible(false);
-        //jLabel5.setVisible(false);
+        jLabel5.setVisible(false);
         jLabel6.setVisible(false);
+        jLabel9.setVisible(false);
+        jLabel10.setVisible(false);
+        jLabel11.setVisible(false);
         tfGuess.setVisible(false);
         // close window event
         this.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -69,31 +66,30 @@ public class GameView extends javax.swing.JFrame {
     
     public void setInfoPlayer (String username) {
         competitor = username;
-        infoPLayer.setText("Chơi với: " + username);
+        infoPLayer.setText("Đối thủ: " + username);
     }
     
     public void setStateHostRoom () {
-        answer = false;
         btnStart.setVisible(true);
         lbWaiting.setVisible(false);
     }
     
     public void setStateUserInvited () {
-        answer = false;
         btnStart.setVisible(false);
         lbWaiting.setVisible(true);
     }
     
     public void afterSubmit() {
+        jLabel9.setVisible(false);
         btnSubmit.setVisible(false);
         tfGuess.setVisible(false);
+        lbProduct.setVisible(false);
+        jLabel11.setVisible(false);
         lbWaiting.setText("Đợi đối thủ...");
         lbWaiting.setVisible(true);
     }
     
-    public void setStartGame () {
-        answer = false;
-        
+    public void setStartGame () {      
         btnStart.setVisible(false);
         lbWaiting.setVisible(false);
         btnSubmit.setVisible(true);
@@ -112,8 +108,32 @@ public class GameView extends javax.swing.JFrame {
         lbProduct.setText("Tên sản phẩm: " + product);
     }
     
+    public void setUrlImage (String imageUrl) {
+        this.imageUrl = imageUrl;
+        new Thread(() -> {
+            try {
+                URI uri = new URI(imageUrl);
+                URL url = uri.toURL();
+
+                ImageIcon icon = new ImageIcon(url);
+                Image scaledImage = icon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+                ImageIcon scaledIcon = new ImageIcon(scaledImage);
+                SwingUtilities.invokeLater(() -> jLabel9.setIcon(scaledIcon));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
     public void setCurrentPrice(int price) {
         this.currentPrice = price;
+    }
+    
+    public void setMinPrice(int minPrice) {
+        this.minPrice = minPrice;
+    }
+    
+    public void setMaxPrice(int maxPrice) {
+        this.maxPrice = maxPrice;
     }
     
     public void startNewRound(int matchTimeLimit) {
@@ -122,13 +142,16 @@ public class GameView extends javax.swing.JFrame {
         lbRound.setVisible(true);
         tfGuess.setVisible(true);
         btnSubmit.setVisible(true);
+        jLabel9.setVisible(true);
+        lbProduct.setVisible(true);
+        jLabel11.setText("Gợi ý: Giá sản phẩm nằm trong khoảng " + minPrice + " - " + maxPrice + "K VND");
+        jLabel11.setVisible(true);
         lbWaiting.setVisible(false);
         jLabel1.setVisible(false);
         jLabel2.setVisible(false);
         jLabel3.setVisible(false);
         jLabel4.setVisible(false);
         tfGuess.setText("");
-        isSubmit = false;
         matchTimer = new CountDownTimer(matchTimeLimit);
         matchTimer.setTimerCallBack(
                 // end match callback
@@ -138,9 +161,6 @@ public class GameView extends javax.swing.JFrame {
                     pbgTimer.setValue(100 * matchTimer.getCurrentTick() / matchTimer.getTimeLimit());
                     pbgTimer.setString("" + CustumDateTimeFormatter.secondsToMinutes(matchTimer.getCurrentTick()));
                     if (pbgTimer.getString().equals("00:00")) {
-                        if (!isSubmit) {
-                            afterSubmit();                            
-                        }
                         matchTimer.pause();
                     }
                     return null;
@@ -151,6 +171,12 @@ public class GameView extends javax.swing.JFrame {
     }
 
     public void showRoundResult(String winner, int actualPrice, int playerGuess, int competitorGuess, float playerScore, float competitorScore) {
+        lbWaiting.setVisible(false);
+        jLabel9.setVisible(false);
+        tfGuess.setVisible(false);
+        btnSubmit.setVisible(false);
+        jLabel11.setVisible(false);
+        lbProduct.setVisible(true);
         this.playerScore = playerScore;
         this.competitorScore = competitorScore;
         lbScore.setText("Điểm số: Bạn " + playerScore + " - " + competitorScore + " Đối thủ");
@@ -164,7 +190,6 @@ public class GameView extends javax.swing.JFrame {
         else {
             jLabel4.setText("Người chiến thắng: " + winner);
         }
-        lbWaiting.setVisible(false);
         jLabel1.setVisible(true);
         jLabel2.setVisible(true);
         jLabel3.setVisible(true);
@@ -195,6 +220,8 @@ public class GameView extends javax.swing.JFrame {
         lbProduct.setVisible(false);
         if (winner.equals(ClientRun.getSocketHandler().getLoginUser())) {
             jLabel5.setVisible(true);
+        } else if (winner.equals("DRAW")) {
+            jLabel10.setVisible(true);
         } else {
             jLabel6.setVisible(true);
         }    
@@ -234,29 +261,35 @@ public class GameView extends javax.swing.JFrame {
         infoPLayer = new javax.swing.JLabel();
         btnLeaveGame = new javax.swing.JButton();
         pbgTimer = new javax.swing.JProgressBar();
-        btnStart = new javax.swing.JButton();
-        lbWaiting = new javax.swing.JLabel();
         lbScore = new javax.swing.JLabel();
         lbRound = new javax.swing.JLabel();
         jLayeredPane1 = new javax.swing.JLayeredPane();
-        lbProduct = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        btnStart = new javax.swing.JButton();
+        lbWaiting = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         btnSubmit = new javax.swing.JButton();
         tfGuess = new javax.swing.JTextField();
-        jLabel5 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        lbProduct = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Game Đoán Giá");
+        setResizable(false);
 
         jLayeredPane2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         infoPLayer.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        infoPLayer.setText("Chơi với:");
-        jLayeredPane2.add(infoPLayer, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 24, 263, 34));
+        infoPLayer.setText("Đối thủ:");
+        jLayeredPane2.add(infoPLayer, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 20, 263, 34));
 
         btnLeaveGame.setBackground(new java.awt.Color(255, 51, 51));
         btnLeaveGame.setForeground(new java.awt.Color(255, 255, 255));
@@ -266,11 +299,21 @@ public class GameView extends javax.swing.JFrame {
                 btnLeaveGameActionPerformed(evt);
             }
         });
-        jLayeredPane2.add(btnLeaveGame, new org.netbeans.lib.awtextra.AbsoluteConstraints(589, 27, 120, 34));
+        jLayeredPane2.add(btnLeaveGame, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 20, 120, 34));
 
         pbgTimer.setStringPainted(true);
-        jLayeredPane2.add(pbgTimer, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 79, 687, 27));
+        jLayeredPane2.add(pbgTimer, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 80, 680, 27));
         pbgTimer.getAccessibleContext().setAccessibleName("");
+
+        lbScore.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        lbScore.setText("Điểm số: Bạn 0 - 0 Đối thủ");
+        jLayeredPane2.add(lbScore, new org.netbeans.lib.awtextra.AbsoluteConstraints(33, 477, 435, -1));
+
+        lbRound.setText("Vòng:");
+        jLayeredPane2.add(lbRound, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 30, 131, -1));
+
+        jLayeredPane1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jLayeredPane1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 20, 200, 200));
 
         btnStart.setText("Bắt đầu");
         btnStart.addActionListener(new java.awt.event.ActionListener() {
@@ -278,39 +321,33 @@ public class GameView extends javax.swing.JFrame {
                 btnStartActionPerformed(evt);
             }
         });
-        jLayeredPane2.add(btnStart, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 120, 98, -1));
+        jLayeredPane1.add(btnStart, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 100, 100, 30));
 
         lbWaiting.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        lbWaiting.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lbWaiting.setText("Đợi chủ phòng bắt đầu....");
-        jLayeredPane2.add(lbWaiting, new org.netbeans.lib.awtextra.AbsoluteConstraints(127, 118, 336, -1));
+        jLayeredPane1.add(lbWaiting, new org.netbeans.lib.awtextra.AbsoluteConstraints(-60, 100, 660, -1));
 
-        lbScore.setText("Điểm số: Bạn 0 - 0 Đối thủ");
-        jLayeredPane2.add(lbScore, new org.netbeans.lib.awtextra.AbsoluteConstraints(33, 477, 435, -1));
-
-        lbRound.setText("Vòng:");
-        jLayeredPane2.add(lbRound, new org.netbeans.lib.awtextra.AbsoluteConstraints(304, 35, 131, -1));
-
-        jLayeredPane1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        lbProduct.setText("Product:");
-        jLayeredPane1.setLayer(lbProduct, javax.swing.JLayeredPane.PALETTE_LAYER);
-        jLayeredPane1.add(lbProduct, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 6, 172, -1));
-
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Price :");
         jLayeredPane1.setLayer(jLabel1, javax.swing.JLayeredPane.PALETTE_LAYER);
-        jLayeredPane1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 28, 172, -1));
+        jLayeredPane1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(-60, 20, 660, -1));
 
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("P1");
         jLayeredPane1.setLayer(jLabel2, javax.swing.JLayeredPane.PALETTE_LAYER);
-        jLayeredPane1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 50, 172, -1));
+        jLayeredPane1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(-60, 40, 660, -1));
 
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("P2");
         jLayeredPane1.setLayer(jLabel3, javax.swing.JLayeredPane.PALETTE_LAYER);
-        jLayeredPane1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 72, 172, -1));
+        jLayeredPane1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-60, 60, 660, -1));
 
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("Winner");
         jLayeredPane1.setLayer(jLabel4, javax.swing.JLayeredPane.PALETTE_LAYER);
-        jLayeredPane1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 186, 172, -1));
+        jLayeredPane1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(-60, 100, 660, -1));
 
         btnSubmit.setText("Gửi đáp án");
         btnSubmit.addActionListener(new java.awt.event.ActionListener() {
@@ -319,30 +356,51 @@ public class GameView extends javax.swing.JFrame {
             }
         });
         jLayeredPane1.setLayer(btnSubmit, javax.swing.JLayeredPane.PALETTE_LAYER);
-        jLayeredPane1.add(btnSubmit, new org.netbeans.lib.awtextra.AbsoluteConstraints(192, 136, 106, 29));
+        jLayeredPane1.add(btnSubmit, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 270, 110, 29));
 
-        tfGuess.setText("Guess:");
+        tfGuess.setText("Nhập giá đoán:");
         tfGuess.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tfGuessActionPerformed(evt);
             }
         });
         jLayeredPane1.setLayer(tfGuess, javax.swing.JLayeredPane.PALETTE_LAYER);
-        jLayeredPane1.add(tfGuess, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 96, 172, -1));
+        jLayeredPane1.add(tfGuess, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 230, 172, -1));
 
-        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/win.gif"))); // NOI18N
-        jLayeredPane1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 6, 480, 319));
+        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/draw.gif"))); // NOI18N
+        jLayeredPane1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 20, 400, 260));
 
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/lose.gif"))); // NOI18N
-        jLayeredPane1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(-50, 0, 480, 270));
+        jLayeredPane1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 430, 270));
+
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/win.gif"))); // NOI18N
+        jLayeredPane1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, -41, 480, 370));
+
+        jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel11.setText("jLabel11");
+        jLayeredPane1.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(-45, 310, 630, -1));
 
         jLayeredPane2.add(jLayeredPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(119, 146, -1, -1));
+
+        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/game.png"))); // NOI18N
+        jLayeredPane2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 785, 540));
+
+        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/BG.png"))); // NOI18N
+        jLayeredPane2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 790, 540));
+
+        lbProduct.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lbProduct.setText("Product:");
+        jLayeredPane2.setLayer(lbProduct, javax.swing.JLayeredPane.PALETTE_LAYER);
+        jLayeredPane2.add(lbProduct, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 140, 650, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLayeredPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 750, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jLayeredPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 785, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -370,7 +428,6 @@ public class GameView extends javax.swing.JFrame {
             int guess = Integer.parseInt(tfGuess.getText());
             ClientRun.getSocketHandler().submitGuess(guess);
             afterSubmit();
-            isSubmit = true;
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập một số hợp lệ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
@@ -413,17 +470,7 @@ public class GameView extends javax.swing.JFrame {
                 new GameView().setVisible(true);
             }
         });
-    }
-
-    public boolean isAnswer() {
-        return answer;
-    }
-
-    public void setAnswer(boolean answer) {
-        this.answer = answer;
-    }
-    
-    
+    }  
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLeaveGame;
@@ -435,11 +482,16 @@ public class GameView extends javax.swing.JFrame {
     private javax.swing.ButtonGroup buttonGroup4;
     private javax.swing.JLabel infoPLayer;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JLayeredPane jLayeredPane1;
     private javax.swing.JLayeredPane jLayeredPane2;
     private javax.swing.JLabel lbProduct;

@@ -5,17 +5,9 @@
  */
 package view;
 
+import java.awt.event.KeyEvent;
 import run.ClientRun;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.event.MouseAdapter;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
 
 /**
  *
@@ -53,10 +45,17 @@ public class LoginView extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Game Đoán Giá");
         setResizable(false);
 
         jLayeredPane1.setPreferredSize(new java.awt.Dimension(550, 440));
         jLayeredPane1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        tfUsername.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfUsernameKeyPressed(evt);
+            }
+        });
         jLayeredPane1.add(tfUsername, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 210, 336, 31));
 
         btnLogin.setBackground(new java.awt.Color(255, 102, 51));
@@ -79,6 +78,11 @@ public class LoginView extends javax.swing.JFrame {
         tfPassword.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tfPasswordActionPerformed(evt);
+            }
+        });
+        tfPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfPasswordKeyPressed(evt);
             }
         });
         jLayeredPane1.add(tfPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 260, 336, 30));
@@ -127,8 +131,8 @@ public class LoginView extends javax.swing.JFrame {
     private void tfPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfPasswordActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_tfPasswordActionPerformed
-
-    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+    
+    private void login() {
         String userName = tfUsername.getText();
         String password = tfPassword.getText();
 
@@ -139,12 +143,28 @@ public class LoginView extends javax.swing.JFrame {
         } else {
             ClientRun.getSocketHandler().login(userName, password);
         }
+    }
+    
+    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+        login();
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void btnChangeRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeRegisterActionPerformed
         this.dispose();
         ClientRun.openScene(ClientRun.SceneName.REGISTER);
     }//GEN-LAST:event_btnChangeRegisterActionPerformed
+
+    private void tfUsernameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfUsernameKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            login();
+        }
+    }//GEN-LAST:event_tfUsernameKeyPressed
+
+    private void tfPasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfPasswordKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            login();
+        }
+    }//GEN-LAST:event_tfPasswordKeyPressed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -160,13 +180,13 @@ public class LoginView extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MessageView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LoginView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MessageView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LoginView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MessageView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LoginView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MessageView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LoginView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 

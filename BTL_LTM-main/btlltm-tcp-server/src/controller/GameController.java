@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import model.GameModel;
+import model.ProductModel;
 
 public class GameController {
     //  SQL
@@ -22,7 +23,8 @@ public class GameController {
     private final String UPDATE_GAME = "UPDATE games SET endTime = ?, winner = ?, score1 = ?, score2 = ?, userleavegame = ? WHERE gameId=?";
     
     private final String HISTORY_GAME = "SELECT startTime, endTime, user1, user2, winner, score1, score2, userleavegame FROM games WHERE user1 = ? OR user2 = ? ORDER BY startTime DESC";
-
+    
+    private final String GET_ALL_PRODUCT = "SELECT * FROM products";
     private final Connection con;
     
     public GameController() {
@@ -107,5 +109,23 @@ public class GameController {
             games.add(game);
         }
         return games;
+    } 
+    
+    public List<ProductModel> getAllProducts() {
+        List<ProductModel> products = new ArrayList<>();
+        try (PreparedStatement p = con.prepareStatement(GET_ALL_PRODUCT);
+            ResultSet r = p.executeQuery()) {
+            while (r.next()) {
+                ProductModel product = new ProductModel();
+                product.setProductName(r.getString("productName"));
+                product.setMinPrice(r.getInt("minPrice"));
+                product.setMaxPrice(r.getInt("maxPrice"));
+                product.setImageUrl(r.getString("imageUrl"));
+                products.add(product);
+            }
+        }
+        catch(SQLException e) {           
+        }
+        return products;
     } 
 }

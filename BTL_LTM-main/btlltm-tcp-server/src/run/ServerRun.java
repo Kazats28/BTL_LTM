@@ -1,6 +1,7 @@
 package run;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -26,9 +27,12 @@ public class ServerRun {
 
         try {
             int port = 8282;
+            String ip = "192.168.1.197";
+            ss = new ServerSocket();
+            InetSocketAddress address = new InetSocketAddress(ip, port);
+            ss.bind(address);
+            System.out.println("Server đang lắng nghe trên: " + ss.getInetAddress() + ":" + ss.getLocalPort());
 
-            ss = new ServerSocket(port);
-            System.out.println("Created Server at port " + port + ".");
             
             // init managers
             clientManager = new ClientManager();

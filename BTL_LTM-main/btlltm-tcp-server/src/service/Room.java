@@ -13,20 +13,8 @@ import java.util.concurrent.Callable;
 import model.UserModel;
 import run.ServerRun;
 import java.util.Random;
-import javax.management.timer.TimerMBean;
 import model.GameModel;
-
-class Product {
-    String name;
-    int minPrice;
-    int maxPrice;
-
-    public Product(String name, int minPrice, int maxPrice) {
-        this.name = name;
-        this.minPrice = minPrice;
-        this.maxPrice = maxPrice;
-    }
-}
+import model.ProductModel;
 
 public class Room {
     String id;
@@ -47,13 +35,16 @@ public class Room {
     private int currentRound = 0;
     private final int maxRounds = 10;
     private String currentProduct;
+    private String currentImage;
     private String winner;
     private int currentPrice;
+    private int minPrice;
+    private int maxPrice;
     private int player1Guess;
     private int player2Guess;
     private float player1Score = 0;
     private float player2Score = 0;
-    
+    List<ProductModel> allProducts = new GameController().getAllProducts();
     public Room(String id) {
         // room id
         this.id = id;
@@ -68,14 +59,14 @@ public class Room {
         startNewRound();
         startTime = LocalDateTime.now();
         gameId = new GameController().insertGame(startTime, client1.getLoginUser(), client2.getLoginUser());
-        //gameId = new GameController().getGameId(startTime, client1.getLoginUser(), client2.getLoginUser());
+        
     }
     
     private void startNewRound() throws SQLException {
         currentRound++;
         if (currentRound <= maxRounds) {
             getRandomProduct();
-            broadcast("NEW_ROUND;" + currentProduct + ";" + currentPrice);
+            broadcast("NEW_ROUND;" + currentProduct + ";" + currentPrice + ";" + currentImage + ";" + minPrice + ";" + maxPrice);
             resetRoundData();
             matchTimer = new CountDownTimer(10);
             matchTimer.setTimerCallBack(
@@ -229,38 +220,16 @@ public class Room {
     }
     
     private void getRandomProduct() {
-        List<Product> products = new ArrayList<>();
-
-        // Thêm các sản phẩm với tên và khoảng giá
-        products.add(new Product("Điện thoại", 5000, 20000));
-        products.add(new Product("Máy tính xách tay", 10000, 30000));
-        products.add(new Product("Tai nghe", 200, 2000));
-        products.add(new Product("Tivi", 5000, 15000));
-        products.add(new Product("Máy ảnh", 3000, 15000));
-        products.add(new Product("Chuột máy tính", 50, 500));
-        products.add(new Product("Bàn phím", 100, 2000));
-        products.add(new Product("USB", 50, 500));
-        products.add(new Product("Thẻ nhớ", 30, 200));
-        products.add(new Product("Ổ cứng di động", 500, 3000));
-        products.add(new Product("Bút bi", 5, 20));
-        products.add(new Product("Quạt mini", 30, 100));
-        products.add(new Product("Đèn LED", 20, 100));
-        products.add(new Product("Dây sạc", 10, 50));
-        products.add(new Product("Sổ tay", 10, 50));
-        products.add(new Product("Bình nước", 50, 200));
-        products.add(new Product("Cốc giữ nhiệt", 50, 300));
-        products.add(new Product("Tai nghe Bluetooth", 100, 1500));
-        products.add(new Product("Loa Bluetooth", 100, 2000));
-        products.add(new Product("Sạc dự phòng", 200, 1000));
-
-        // Chọn ngẫu nhiên một sản phẩm và sinh giá ngẫu nhiên trong khoảng giá của nó
-        Random random = new Random();
-        Product randomProduct = products.get(random.nextInt(products.size()));
-        
-        int randomPrice = random.nextInt(randomProduct.maxPrice - randomProduct.minPrice + 1) + randomProduct.minPrice;
-        
-        currentProduct = randomProduct.name;
-        currentPrice = randomPrice;
+        List<ProductModel> products = new ArrayList<>();
+        if (allProducts != null && !allProducts.isEmpty()) {
+            Random random = new Random();
+            ProductModel randomProduct = allProducts.get(random.nextInt(allProducts.size()));
+            currentProduct = randomProduct.getProductName();
+            currentPrice = random.nextInt(randomProduct.getMaxPrice() - randomProduct.getMinPrice() + 1) + randomProduct.getMinPrice();
+            currentImage = randomProduct.getImageUrl();
+            minPrice = randomProduct.getMinPrice();
+            maxPrice = randomProduct.getMaxPrice();
+        }
     }
 
     public void draw () throws SQLException {

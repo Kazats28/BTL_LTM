@@ -5,17 +5,10 @@
  */
 package view;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
+import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
 import javax.swing.ImageIcon;
 import run.ClientRun;
-import javax.swing.border.*;
 /**
  *
  * @author admin
@@ -55,12 +48,18 @@ public class RegisterView extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Game Đoán Giá");
+        setResizable(false);
 
         jLayeredPane1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         tfPassword.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tfPasswordActionPerformed(evt);
+            }
+        });
+        tfPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfPasswordKeyPressed(evt);
             }
         });
         jLayeredPane1.add(tfPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 250, 336, 30));
@@ -76,6 +75,12 @@ public class RegisterView extends javax.swing.JFrame {
             }
         });
         jLayeredPane1.add(btnChangeLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(237, 390, 110, -1));
+
+        tfUsername.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfUsernameKeyPressed(evt);
+            }
+        });
         jLayeredPane1.add(tfUsername, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 210, 336, 31));
 
         btnRegister.setBackground(new java.awt.Color(255, 102, 51));
@@ -101,6 +106,11 @@ public class RegisterView extends javax.swing.JFrame {
         tfConfirmPassword.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tfConfirmPasswordActionPerformed(evt);
+            }
+        });
+        tfConfirmPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfConfirmPasswordKeyPressed(evt);
             }
         });
         jLayeredPane1.add(tfConfirmPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 290, 336, 30));
@@ -138,8 +148,8 @@ public class RegisterView extends javax.swing.JFrame {
         this.dispose();
         ClientRun.openScene(ClientRun.SceneName.LOGIN);
     }//GEN-LAST:event_btnChangeLoginActionPerformed
-
-    private void btnRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegisterActionPerformed
+    
+    private void register() {
         String userName = tfUsername.getText();
         String password = tfPassword.getText();
         String confirmPassword = tfConfirmPassword.getText();
@@ -156,12 +166,64 @@ public class RegisterView extends javax.swing.JFrame {
         } else {
            ClientRun.getSocketHandler().register(userName, password);
         }
+    }
+    
+    private void btnRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegisterActionPerformed
+        register();
     }//GEN-LAST:event_btnRegisterActionPerformed
 
     private void tfConfirmPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfConfirmPasswordActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_tfConfirmPasswordActionPerformed
 
+    private void tfUsernameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfUsernameKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            register();
+        }
+    }//GEN-LAST:event_tfUsernameKeyPressed
+
+    private void tfPasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfPasswordKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            register();
+        }
+    }//GEN-LAST:event_tfPasswordKeyPressed
+
+    private void tfConfirmPasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfConfirmPasswordKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            register();
+        }
+    }//GEN-LAST:event_tfConfirmPasswordKeyPressed
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(RegisterView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(RegisterView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(RegisterView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(RegisterView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new RegisterView().setVisible(true);
+            }
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChangeLogin;
