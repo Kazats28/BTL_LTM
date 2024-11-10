@@ -19,18 +19,18 @@ import model.GameModel;
 import model.UserModel;
 import run.ServerRun;
 
-public class Client implements Runnable {
+public class ClientHandler implements Runnable {
     Socket s;
     DataInputStream dis;
     DataOutputStream dos;
 
     String loginUser;
-    Client cCompetitor;
+    ClientHandler cCompetitor;
     
 //    ArrayList<Client> clients
     Room joinedRoom; // if == null => chua vao phong nao het
 
-    public Client(Socket s) throws IOException {
+    public ClientHandler(Socket s) throws IOException {
         this.s = s;
 
         // obtaining input and output streams 
@@ -128,7 +128,7 @@ public class Client implements Runnable {
 //                onReceiveLeaveRoom("");
                 break;
             } catch (SQLException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -143,7 +143,7 @@ public class Client implements Runnable {
             ServerRun.clientManager.remove(this);
 
         } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -205,7 +205,7 @@ public class Client implements Runnable {
         String result = new UserController().getInfoUser(username);
         
         String status = "";
-        Client c = ServerRun.clientManager.find(username);
+        ClientHandler c = ServerRun.clientManager.find(username);
         if (c == null) {
             status = "Offline";
         } else {
@@ -296,7 +296,7 @@ public class Client implements Runnable {
         // create new room
         joinedRoom = ServerRun.roomManager.createRoom();
         // add client
-        Client c = ServerRun.clientManager.find(loginUser);
+        ClientHandler c = ServerRun.clientManager.find(loginUser);
         joinedRoom.addClient(this);
         cCompetitor = ServerRun.clientManager.find(userInvited);
         
@@ -359,7 +359,7 @@ public class Client implements Runnable {
         ServerRun.roomManager.remove(room);
         
         // userHost out room
-        Client c = ServerRun.clientManager.find(user2);
+        ClientHandler c = ServerRun.clientManager.find(user2);
         c.setJoinedRoom(null);
         // Delete competitor of userhost
         c.setcCompetitor(null);
@@ -374,7 +374,7 @@ public class Client implements Runnable {
         String username = splitted[1];
         
         String status = "";
-        Client c = ServerRun.clientManager.find(username);
+        ClientHandler c = ServerRun.clientManager.find(username);
         if (c == null) {
             status = "OFFLINE";
         } else {
@@ -467,11 +467,11 @@ public class Client implements Runnable {
         this.loginUser = loginUser;
     }
 
-    public Client getcCompetitor() {
+    public ClientHandler getcCompetitor() {
         return cCompetitor;
     }
 
-    public void setcCompetitor(Client cCompetitor) {
+    public void setcCompetitor(ClientHandler cCompetitor) {
         this.cCompetitor = cCompetitor;
     }
 

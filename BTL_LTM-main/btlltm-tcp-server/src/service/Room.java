@@ -19,8 +19,9 @@ import model.ProductModel;
 public class Room {
     String id;
     String time = "00:00";
-    Client client1 = null, client2 = null;
-    ArrayList<Client> clients = new ArrayList<>();
+    ClientHandler client1 = null;
+    ClientHandler client2 = null;
+    ArrayList<ClientHandler> clients = new ArrayList<>();
     
     boolean gameStarted = false;
     CountDownTimer matchTimer;
@@ -144,7 +145,7 @@ public class Room {
         resultClient2 = null;
     }
     
-    public void handleGuess(Client client, int guess) {
+    public void handleGuess(ClientHandler client, int guess) {
         if (client == client1) {
             player1Guess = guess;
             resultClient1 = "SUBMITTED";
@@ -290,7 +291,7 @@ public class Room {
     }
     
     // add/remove client
-    public boolean addClient(Client c) {
+    public boolean addClient(ClientHandler c) {
         if (!clients.contains(c)) {
             clients.add(c);
             if (client1 == null) {
@@ -303,7 +304,7 @@ public class Room {
         return false;
     }
 
-    public boolean removeClient(Client c) {
+    public boolean removeClient(ClientHandler c) {
         if (clients.contains(c)) {
             clients.remove(c);
             return true;
@@ -318,8 +319,8 @@ public class Room {
         });
     }
     
-    public Client find(String username) {
-        for (Client c : clients) {
+    public ClientHandler find(String username) {
+        for (ClientHandler c : clients) {
             if (c.getLoginUser()!= null && c.getLoginUser().equals(username)) {
                 return c;
             }
@@ -336,27 +337,27 @@ public class Room {
         this.id = id;
     }
 
-    public Client getClient1() {
+    public ClientHandler getClient1() {
         return client1;
     }
 
-    public void setClient1(Client client1) {
+    public void setClient1(ClientHandler client1) {
         this.client1 = client1;
     }
 
-    public Client getClient2() {
+    public ClientHandler getClient2() {
         return client2;
     }
 
-    public void setClient2(Client client2) {
+    public void setClient2(ClientHandler client2) {
         this.client2 = client2;
     }
 
-    public ArrayList<Client> getClients() {
+    public ArrayList<ClientHandler> getClients() {
         return clients;
     }
 
-    public void setClients(ArrayList<Client> clients) {
+    public void setClients(ArrayList<ClientHandler> clients) {
         this.clients = clients;
     }
     

@@ -7,13 +7,13 @@ import java.util.ArrayList;
  * @author admin
  */
 public class ClientManager {
-    ArrayList<Client> clients;
+    ArrayList<ClientHandler> clients;
 
     public ClientManager() {
         clients = new ArrayList<>();
     }
 
-    public boolean add(Client c) {
+    public boolean add(ClientHandler c) {
         if (!clients.contains(c)) {
             clients.add(c);
             return true;
@@ -21,7 +21,7 @@ public class ClientManager {
         return true;
     }
 
-    public boolean remove(Client c) {
+    public boolean remove(ClientHandler c) {
         if (clients.contains(c)) {
             clients.remove(c);
             return true;
@@ -29,8 +29,8 @@ public class ClientManager {
         return false;
     }
 
-    public Client find(String username) {
-        for (Client c : clients) {
+    public ClientHandler find(String username) {
+        for (ClientHandler c : clients) {
             if (c.getLoginUser()!= null && c.getLoginUser().equals(username)) {
                 return c;
             }

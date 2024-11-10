@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import service.Client;
+import service.ClientHandler;
 import service.ClientManager;
 import service.RoomManager;
 import view.ServerView;
@@ -27,10 +27,11 @@ public class ServerRun {
 
         try {
             int port = 8282;
-            String ip = "192.168.1.197";
-            ss = new ServerSocket();
-            InetSocketAddress address = new InetSocketAddress(ip, port);
-            ss.bind(address);
+//            String ip = "192.168.1.197";
+//            ss = new ServerSocket();
+//            InetSocketAddress address = new InetSocketAddress(ip, port);
+//            ss.bind(address);
+            ss = new ServerSocket(port);
             System.out.println("Server đang lắng nghe trên: " + ss.getInetAddress() + ":" + ss.getLocalPort());
 
             
@@ -55,14 +56,14 @@ public class ServerRun {
                      System.out.println("+ New Client connected: " + s);
 
                     // create new client runnable object
-                    Client c = new Client(s);
+                    ClientHandler c = new ClientHandler(s);
                     clientManager.add(c);
                     System.out.println("Count of client online: " + clientManager.getSize());
                     // execute client runnable
                     executor.execute(c);
 
                 } catch (IOException ex) {
-                    // Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                    // Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
                     isShutDown = true;
                 }
             }

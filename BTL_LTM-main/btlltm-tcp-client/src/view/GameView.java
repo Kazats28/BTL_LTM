@@ -9,6 +9,7 @@ import java.util.concurrent.Callable;
 import run.ClientRun;
 import helper.*;
 import java.awt.Image;
+import java.awt.event.KeyEvent;
 import java.net.URI;
 import java.net.URL;
 import javax.swing.*;
@@ -355,6 +356,11 @@ public class GameView extends javax.swing.JFrame {
                 btnSubmitActionPerformed(evt);
             }
         });
+        btnSubmit.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btnSubmitKeyPressed(evt);
+            }
+        });
         jLayeredPane1.setLayer(btnSubmit, javax.swing.JLayeredPane.PALETTE_LAYER);
         jLayeredPane1.add(btnSubmit, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 270, 110, 29));
 
@@ -422,8 +428,8 @@ public class GameView extends javax.swing.JFrame {
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
         ClientRun.getSocketHandler().startGame(competitor);
     }//GEN-LAST:event_btnStartActionPerformed
-
-    private void btnSubmitActionPerformed(java.awt.event.ActionEvent evt) {
+    
+    private void submit() {
         try {
             int guess = Integer.parseInt(tfGuess.getText());
             ClientRun.getSocketHandler().submitGuess(guess);
@@ -432,10 +438,20 @@ public class GameView extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập một số hợp lệ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
+    private void btnSubmitActionPerformed(java.awt.event.ActionEvent evt) {
+        submit();
+    }
 
     private void tfGuessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfGuessActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_tfGuessActionPerformed
+
+    private void btnSubmitKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btnSubmitKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            submit();
+        }
+    }//GEN-LAST:event_btnSubmitKeyPressed
 
     /**
      * @param args the command line arguments

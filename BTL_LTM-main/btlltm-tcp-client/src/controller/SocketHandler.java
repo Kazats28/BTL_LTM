@@ -249,17 +249,14 @@ public class SocketHandler {
     }
     
     private void onReceiveLogin(String received) {
-        // get status from data
         String[] splitted = received.split(";");
         String status = splitted[1];
 
         if (status.equals("failed")) {
-            // hiển thị lỗi
             String failedMsg = splitted[2];
             JOptionPane.showMessageDialog(ClientRun.loginView, failedMsg, "Lỗi", JOptionPane.ERROR_MESSAGE);
 
         } else if (status.equals("success")) {
-            // lưu user login
             this.loginUser = splitted[2];
             this.score = Float.parseFloat(splitted[3]);
             
@@ -543,11 +540,10 @@ public class SocketHandler {
         
         for (int i = 0; i < gameCount; i++) {
             Vector<Object> row = new Vector<>();
-            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");  
             DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
-            LocalDateTime start = LocalDateTime.parse(splitted[2 + i * 8], inputFormatter);
+            LocalDateTime start = LocalDateTime.parse(splitted[2 + i * 8]);
             String startTime = start.format(outputFormatter);
-            LocalDateTime end = LocalDateTime.parse(splitted[3 + i * 8], inputFormatter);
+            LocalDateTime end = LocalDateTime.parse(splitted[3 + i * 8]);
             String endTime = end.format(outputFormatter);
             row.add(startTime);
             row.add(endTime);
@@ -597,10 +593,6 @@ public class SocketHandler {
             row.add(Float.parseFloat(splitted[3 + i * 2]));
             leaderboardData.add(row);
         }
-
-        // Sort the leaderboard data by score in ascending order
-//        leaderboardData.sort((a, b) -> Float.compare((Float) b.get(2), (Float) a.get(2)));
-
         // Update ranks
         for (int i = 0; i < leaderboardData.size(); i++) {
             leaderboardData.get(i).set(0, i + 1);
@@ -616,9 +608,9 @@ public class SocketHandler {
         String[] splitted = received.split(";");
         String product = splitted[1];
         int price = Integer.parseInt(splitted[2]);
-        int minPrice = Integer.parseInt(splitted[3]);
-        int maxPrice = Integer.parseInt(splitted[4]);
         String urlImage = splitted[3];
+        int minPrice = Integer.parseInt(splitted[4]);
+        int maxPrice = Integer.parseInt(splitted[5]);
         ClientRun.gameView.setCurrentProduct(product);
         ClientRun.gameView.setCurrentPrice(price);
         ClientRun.gameView.setUrlImage(urlImage);
