@@ -207,7 +207,6 @@ public class Room {
                 client2Win(0);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
     
@@ -220,7 +219,6 @@ public class Room {
     }
     
     private void getRandomProduct() {
-        List<ProductModel> products = new ArrayList<>();
         if (allProducts != null && !allProducts.isEmpty()) {
             Random random = new Random();
             ProductModel randomProduct = allProducts.get(random.nextInt(allProducts.size()));

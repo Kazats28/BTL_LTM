@@ -1,8 +1,9 @@
 
 package model;
 
+import java.io.Serializable;
 
-public class ProductModel {
+public class ProductModel implements Serializable{
     private static final long serialVersionUID = 4L;
     private String productName;
     private int minPrice;
