@@ -47,8 +47,8 @@ public class Room {
     private float player2Score = 0;
     List<ProductModel> allProducts = new GameController().getAllProducts();
     public Room(String id) {
-        // room id
         this.id = id;
+        getRandomProduct();
     }
 
     public boolean isGameStarted() {
@@ -59,8 +59,7 @@ public class Room {
         gameStarted = true;       
         startNewRound();
         startTime = LocalDateTime.now();
-        gameId = new GameController().insertGame(startTime, client1.getLoginUser(), client2.getLoginUser());
-        getRandomProduct();
+        gameId = new GameController().insertGame(startTime, client1.getLoginUser(), client2.getLoginUser());       
         broadcast("GET_IMAGE;" + currentImage);
     }
     
@@ -69,6 +68,9 @@ public class Room {
         if (currentRound <= maxRounds) {           
             broadcast("NEW_ROUND;" + currentProduct + ";" + currentPrice + ";" + minPrice + ";" + maxPrice);
             resetRoundData();
+            if (matchTimerRound != null) {
+                matchTimerRound.pause();
+            }
             matchTimer = new CountDownTimer(10);
             matchTimer.setTimerCallBack(
                 null,
@@ -77,6 +79,9 @@ public class Room {
                     System.out.println(time);
                     if (time.equals("00:00")) {
                         endRound();
+                        if (matchTimer != null) {
+                            matchTimer.pause();
+                        }
                     }
                     return null;
                 },
@@ -92,6 +97,9 @@ public class Room {
         calculateRoundResult();
         getRandomProduct();
         broadcast("GET_IMAGE;" + currentImage);
+        if (matchTimer != null) {
+            matchTimer.pause();
+        }
         matchTimerRound = new CountDownTimer(5);
         matchTimerRound.setTimerCallBack(
             null,
@@ -100,7 +108,9 @@ public class Room {
                 System.out.println(time);
                 if (time.equals("00:00")) {
                     startNewRound();
-                    matchTimerRound.pause();
+                    if (matchTimerRound!= null) {
+                        matchTimerRound.pause();
+                    }
                 }
                 return null;
             },
@@ -124,6 +134,9 @@ public class Room {
         game.setScore2(player2Score);
         game.setUserLeaveGame(" ");
         new GameController().updateGame(game, gameId);
+        if (matchTimerRound != null) {
+            matchTimerRound.pause();
+        }
         matchTimer = new CountDownTimer(10);
         matchTimer.setTimerCallBack(
             null,
@@ -131,7 +144,9 @@ public class Room {
                 time = "" + CustumDateTimeFormatter.secondsToMinutes(matchTimer.getCurrentTick());
                 System.out.println(time);
                 if (time.equals("00:00")) {
-                    matchTimer.pause();
+                    if (matchTimer != null) {
+                        matchTimer.pause();
+                    }
                     deleteRoom();
                 }
                 return null;
@@ -164,11 +179,15 @@ public class Room {
     public void calculateRoundResult() {
         float roundScore1 = 0;
         float roundScore2 = 0;
-        if (resultClient1 == null) {
+        if (resultClient1 == null && resultClient2.equals("SUBMITTED")) {
             roundScore2 = 1;
         }
-        else if (resultClient2 == null) {
+        else if (resultClient2 == null && resultClient1.equals("SUBMITTED")) {
             roundScore1 = 1;
+        }
+        else if (resultClient1 == null && resultClient2 == null) {
+            roundScore1 = 0.5f;
+            roundScore2 = 0.5f;
         }
         else if (player1Guess > currentPrice && player2Guess > currentPrice) {
             if (player1Guess < player2Guess) roundScore1 = 1;
@@ -233,8 +252,8 @@ public class Room {
         if (allProducts != null && !allProducts.isEmpty()) {
             Random random = new Random();
             int rand = random.nextInt(allProducts.size());
-            allProducts.remove(rand);
             ProductModel randomProduct = allProducts.get(rand);
+            allProducts.remove(rand);
             currentProduct = randomProduct.getProductName();
             currentPrice = random.nextInt(randomProduct.getMaxPrice() - randomProduct.getMinPrice() + 1) + randomProduct.getMinPrice();
             currentImage = randomProduct.getImageUrl();

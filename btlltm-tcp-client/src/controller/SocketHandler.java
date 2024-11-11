@@ -163,6 +163,7 @@ public class SocketHandler {
 
         // alert if connect interup
         JOptionPane.showMessageDialog(null, "Mất kết nối tới server! Hãy thử lại sau.", "Lỗi kết nối", JOptionPane.ERROR_MESSAGE);
+        close();
         ClientRun.closeAllScene();
         System.exit(0);
     }
