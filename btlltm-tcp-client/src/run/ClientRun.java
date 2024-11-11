@@ -57,7 +57,7 @@ public class ClientRun {
     
     private void connect() {
         String ip = "0.tcp.ap.ngrok.io";
-        int port = 17182;
+        int port = 18418;
         // connect to server
         new Thread(() -> {
             // call controller

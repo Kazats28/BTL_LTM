@@ -23,7 +23,9 @@ public class GameView extends javax.swing.JFrame {
     CountDownTimer matchTimer;
     CountDownTimer matchTimerRound;
     int currentRound = 0;
-    int maxRounds = 10;
+    int timeRound;
+    int timeEndRound;
+    int maxRounds;
     float playerScore = 0;
     int playerGuess = 0;
     float competitorScore = 0;
@@ -90,7 +92,10 @@ public class GameView extends javax.swing.JFrame {
         lbWaiting.setVisible(true);
     }
     
-    public void setStartGame () {      
+    public void setStartGame (int timeRound, int timeEndRound, int maxRound) {  
+        this.timeRound = timeRound;
+        this.timeEndRound = timeEndRound;
+        this.maxRounds = maxRound;
         btnStart.setVisible(false);
         lbWaiting.setVisible(false);
         btnSubmit.setVisible(true);
@@ -133,7 +138,7 @@ public class GameView extends javax.swing.JFrame {
         this.maxPrice = maxPrice;
     }
     
-    public void startNewRound(int matchTimeLimit) {
+    public void startNewRound() {
         currentRound++;
         lbRound.setText("Vòng: " + currentRound + "/" + maxRounds);
         lbRound.setVisible(true);
@@ -152,7 +157,7 @@ public class GameView extends javax.swing.JFrame {
         if (matchTimerRound != null) {
             matchTimerRound.pause();
         }       
-        matchTimer = new CountDownTimer(matchTimeLimit);
+        matchTimer = new CountDownTimer(timeRound);
         matchTimer.setTimerCallBack(
                 // end match callback
                 null,
@@ -195,7 +200,7 @@ public class GameView extends javax.swing.JFrame {
         jLabel3.setVisible(true);
         jLabel4.setVisible(true);
         matchTimer.pause();
-        matchTimerRound = new CountDownTimer(5);
+        matchTimerRound = new CountDownTimer(timeEndRound);
         matchTimerRound.setTimerCallBack(
                 // end match callback
                 null,
@@ -227,7 +232,7 @@ public class GameView extends javax.swing.JFrame {
             jLabel6.setVisible(true);
         }
         matchTimer.pause();
-        matchTimer = new CountDownTimer(10);
+        matchTimer = new CountDownTimer(timeRound);
         matchTimer.setTimerCallBack(
                 // end match callback
                 null,
@@ -374,6 +379,11 @@ public class GameView extends javax.swing.JFrame {
                 tfGuessActionPerformed(evt);
             }
         });
+        tfGuess.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfGuessKeyPressed(evt);
+            }
+        });
         jLayeredPane1.setLayer(tfGuess, javax.swing.JLayeredPane.PALETTE_LAYER);
         jLayeredPane1.add(tfGuess, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 230, 172, -1));
 
@@ -452,10 +462,14 @@ public class GameView extends javax.swing.JFrame {
     }//GEN-LAST:event_tfGuessActionPerformed
 
     private void btnSubmitKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btnSubmitKeyPressed
+
+    }//GEN-LAST:event_btnSubmitKeyPressed
+
+    private void tfGuessKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfGuessKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             submit();
         }
-    }//GEN-LAST:event_btnSubmitKeyPressed
+    }//GEN-LAST:event_tfGuessKeyPressed
 
     /**
      * @param args the command line arguments

@@ -500,9 +500,11 @@ public class SocketHandler {
         // get status from data
         String[] splitted = received.split(";");
         String status = splitted[1];
-
+        int timeRound = Integer.parseInt(splitted[3]);
+        int timeEndRound = Integer.parseInt(splitted[4]);
+        int maxRound = Integer.parseInt(splitted[5]);
         if (status.equals("success")) {           
-            ClientRun.gameView.setStartGame();
+            ClientRun.gameView.setStartGame(timeRound, timeEndRound, maxRound);
         }
     }
     
@@ -619,7 +621,7 @@ public class SocketHandler {
         ClientRun.gameView.setCurrentPrice(price);       
         ClientRun.gameView.setMinPrice(minPrice);
         ClientRun.gameView.setMaxPrice(maxPrice);
-        ClientRun.gameView.startNewRound(10);
+        ClientRun.gameView.startNewRound();
     }
     
     private void onReceiveRoundResult(String received) {

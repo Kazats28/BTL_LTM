@@ -26,7 +26,9 @@ public class ClientHandler implements Runnable {
 
     String loginUser;
     ClientHandler cCompetitor;
-    
+    int timeRound = 5;
+    int timeEndRound = 3;
+    int maxRound = 5;
 //    ArrayList<Client> clients
     Room joinedRoom; // if == null => chua vao phong nao het
 
@@ -445,11 +447,11 @@ public class ClientHandler implements Runnable {
     private void onReceiveStartGame(String received) throws SQLException {
         String[] splitted = received.split(";");
         String roomId = splitted[3];
- 
+        
         // send result
-        String msg = "START_GAME;success;" + roomId;
+        String msg = "START_GAME;success;" + roomId + ";" + timeRound + ";" + timeEndRound + ";" + maxRound;
         joinedRoom.broadcast(msg);
-        joinedRoom.startGame();
+        joinedRoom.startGame(timeRound, timeEndRound, maxRound);
     }
     // Close app
     private void onReceiveClose() {
