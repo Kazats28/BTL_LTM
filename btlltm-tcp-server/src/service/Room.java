@@ -60,14 +60,14 @@ public class Room {
         startNewRound();
         startTime = LocalDateTime.now();
         gameId = new GameController().insertGame(startTime, client1.getLoginUser(), client2.getLoginUser());
-        
+        getRandomProduct();
+        broadcast("GET_IMAGE;" + currentImage);
     }
     
     private void startNewRound() throws SQLException {
         currentRound++;
-        if (currentRound <= maxRounds) {
-            getRandomProduct();
-            broadcast("NEW_ROUND;" + currentProduct + ";" + currentPrice + ";" + currentImage + ";" + minPrice + ";" + maxPrice);
+        if (currentRound <= maxRounds) {           
+            broadcast("NEW_ROUND;" + currentProduct + ";" + currentPrice + ";" + minPrice + ";" + maxPrice);
             resetRoundData();
             matchTimer = new CountDownTimer(10);
             matchTimer.setTimerCallBack(
@@ -90,6 +90,8 @@ public class Room {
     private void endRound() {
         matchTimer.pause();
         calculateRoundResult();
+        getRandomProduct();
+        broadcast("GET_IMAGE;" + currentImage);
         matchTimerRound = new CountDownTimer(5);
         matchTimerRound.setTimerCallBack(
             null,
@@ -162,21 +164,29 @@ public class Room {
     public void calculateRoundResult() {
         float roundScore1 = 0;
         float roundScore2 = 0;
-        if (player1Guess > currentPrice && player2Guess > currentPrice) {
+        if (resultClient1 == null) {
+            roundScore2 = 1;
+        }
+        else if (resultClient2 == null) {
+            roundScore1 = 1;
+        }
+        else if (player1Guess > currentPrice && player2Guess > currentPrice) {
             if (player1Guess < player2Guess) roundScore1 = 1;
             else if (player2Guess < player1Guess) roundScore2 = 1;
             else {
                 roundScore1 = 0.5f;
                 roundScore2 = 0.5f;
             }
-        } else if (player1Guess <= currentPrice && player2Guess <= currentPrice) {
+        } 
+        else if (player1Guess <= currentPrice && player2Guess <= currentPrice) {
             if (player1Guess > player2Guess) roundScore1 = 1;
             else if (player2Guess > player1Guess) roundScore2 = 1;
             else {
                 roundScore1 = 0.5f;
                 roundScore2 = 0.5f;
             }
-        } else if (player1Guess <= currentPrice) {
+        } 
+        else if (player1Guess <= currentPrice) {
             roundScore1 = 1;
         } else {
             roundScore2 = 1;
@@ -222,7 +232,9 @@ public class Room {
     private void getRandomProduct() {
         if (allProducts != null && !allProducts.isEmpty()) {
             Random random = new Random();
-            ProductModel randomProduct = allProducts.get(random.nextInt(allProducts.size()));
+            int rand = random.nextInt(allProducts.size());
+            allProducts.remove(rand);
+            ProductModel randomProduct = allProducts.get(rand);
             currentProduct = randomProduct.getProductName();
             currentPrice = random.nextInt(randomProduct.getMaxPrice() - randomProduct.getMinPrice() + 1) + randomProduct.getMinPrice();
             currentImage = randomProduct.getImageUrl();

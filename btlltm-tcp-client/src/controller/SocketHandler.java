@@ -140,6 +140,9 @@ public class SocketHandler {
                     case "GAME_END":
                         onReceiveGameEnd(received);
                         break;
+                    case "GET_IMAGE":
+                        onReceiveGetImage(received);
+                        break;    
                     case "EXIT":
                         running = false;
                 }
@@ -609,12 +612,10 @@ public class SocketHandler {
         String[] splitted = received.split(";");
         String product = splitted[1];
         int price = Integer.parseInt(splitted[2]);
-        String urlImage = splitted[3];
-        int minPrice = Integer.parseInt(splitted[4]);
-        int maxPrice = Integer.parseInt(splitted[5]);
+        int minPrice = Integer.parseInt(splitted[3]);
+        int maxPrice = Integer.parseInt(splitted[4]);
         ClientRun.gameView.setCurrentProduct(product);
-        ClientRun.gameView.setCurrentPrice(price);
-        ClientRun.gameView.setUrlImage(urlImage);
+        ClientRun.gameView.setCurrentPrice(price);       
         ClientRun.gameView.setMinPrice(minPrice);
         ClientRun.gameView.setMaxPrice(maxPrice);
         ClientRun.gameView.startNewRound(10);
@@ -650,6 +651,12 @@ public class SocketHandler {
         String winner = splitted[1];
         float finalScore = Float.parseFloat(splitted[2]);
         ClientRun.gameView.showGameEnd(winner, finalScore);
+    }
+    
+    private void onReceiveGetImage(String received) {
+        String[] splitted = received.split(";");
+        String imageUrl = splitted[1];
+        ClientRun.gameView.setUrlImage(imageUrl);
     }
     
     // get set
