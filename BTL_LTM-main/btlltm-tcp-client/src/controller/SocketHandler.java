@@ -159,8 +159,9 @@ public class SocketHandler {
         }
 
         // alert if connect interup
-        JOptionPane.showMessageDialog(null, "Mất kết nối tới server. Hãy thử lại sau!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, "Mất kết nối tới server! Hãy thử lại sau.", "Lỗi kết nối", JOptionPane.ERROR_MESSAGE);
         ClientRun.closeAllScene();
+        System.exit(0);
     }
     
     public void login(String email, String password) {

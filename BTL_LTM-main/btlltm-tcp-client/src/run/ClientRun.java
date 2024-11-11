@@ -57,7 +57,7 @@ public class ClientRun {
     
     private void connect() {
         String ip = "0.tcp.ap.ngrok.io";
-        int port = 15441;
+        int port = 10287;
         // connect to server
         new Thread(() -> {
             // call controller
@@ -80,7 +80,8 @@ public class ClientRun {
     }
 
     private void onFailed(String failedMsg) {
-        JOptionPane.showMessageDialog(null, failedMsg, "Lỗi kết nối", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, "Không thể kết nối tới server! Hãy thử lại sau.", "Lỗi kết nối", JOptionPane.ERROR_MESSAGE);
+        System.exit(0);
     }
     
     public static void openScene(SceneName sceneName) {
